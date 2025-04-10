@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "3G+IG5tujE0=",
+  "dgSpecHash": "HFr9ypptXwA=",
   "success": true,
-  "projectFilePath": "C:\\VSCODE\\MAKESEASY\\API\\api.csproj",
+  "projectFilePath": "C:\\VSCODE\\MakesEasy\\api\\api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\mtmal\\.nuget\\packages\\microsoft.aspnetcore.cors\\2.3.0\\microsoft.aspnetcore.cors.2.3.0.nupkg.sha512",
     "C:\\Users\\mtmal\\.nuget\\packages\\microsoft.aspnetcore.http.abstractions\\2.3.0\\microsoft.aspnetcore.http.abstractions.2.3.0.nupkg.sha512",

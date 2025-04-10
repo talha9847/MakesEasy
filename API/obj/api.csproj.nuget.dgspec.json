@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\VSCODE\\MAKESEASY\\API\\api.csproj": {}
+    "C:\\VSCODE\\MakesEasy\\api\\api.csproj": {}
   },
   "projects": {
-    "C:\\VSCODE\\MAKESEASY\\API\\api.csproj": {
+    "C:\\VSCODE\\MakesEasy\\api\\api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\VSCODE\\MAKESEASY\\API\\api.csproj",
+        "projectUniqueName": "C:\\VSCODE\\MakesEasy\\api\\api.csproj",
         "projectName": "api",
-        "projectPath": "C:\\VSCODE\\MAKESEASY\\API\\api.csproj",
+        "projectPath": "C:\\VSCODE\\MakesEasy\\api\\api.csproj",
         "packagesPath": "C:\\Users\\mtmal\\.nuget\\packages\\",
-        "outputPath": "C:\\VSCODE\\MAKESEASY\\API\\obj\\",
+        "outputPath": "C:\\VSCODE\\MakesEasy\\api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

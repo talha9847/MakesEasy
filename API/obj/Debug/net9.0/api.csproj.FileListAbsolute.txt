@@ -35,3 +35,4 @@ C:\VSCODE\MAKESEASY\api\obj\Debug\net9.0\refint\api.dll
 C:\VSCODE\MAKESEASY\api\obj\Debug\net9.0\api.pdb
 C:\VSCODE\MAKESEASY\api\obj\Debug\net9.0\api.genruntimeconfig.cache
 C:\VSCODE\MAKESEASY\api\obj\Debug\net9.0\ref\api.dll
+C:\VSCODE\MakesEasy\api\obj\Debug\net9.0\api.sourcelink.json
