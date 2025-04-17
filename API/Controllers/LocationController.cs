@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using MakesEasy.Interfaces;
 using MakesEasy.Models;
 using Microsoft.AspNetCore.Http;
@@ -158,6 +159,29 @@ namespace MyApp.Namespace
                 System.Console.WriteLine("Error: " + ex.Message);
                 return BadRequest(new { message = "Error " });
 
+            }
+        }
+
+        [HttpGet]
+        [Route("GetOccupations")]
+        public async Task<IActionResult> GetOccupations()
+        {
+            try
+            {
+                var occupation = await _locationRepo.GetOccupations();
+                if (occupation != null)
+                {
+                    return Ok(new { message = "Occupations Get Successfully",Occupation=occupation });
+                }
+                else
+                {
+                    return BadRequest(new { message = "Not Found" });
+                }
+            }
+            catch (System.Exception ex)
+            {
+                System.Console.WriteLine("Error: " + ex.Message);
+                return BadRequest(new { message = "Not Found" + ex.Message });
             }
         }
     }

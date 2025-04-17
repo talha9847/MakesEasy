@@ -9,6 +9,8 @@ import ContactUs from "./components/ContactUs";
 import Login from "./components/Login";
 import { Dashboard } from "./AdminComponents/Dashboard";
 import User from "./AdminComponents/User"
+import { Members } from "./AdminComponents/Members";
+import { Memb } from "./AdminComponents/Memb";
 const App = () => {
   return (
     <Router>
@@ -22,6 +24,8 @@ const App = () => {
             <Route path="/contactus" element={<ContactUs />} />
             <Route path="/login" element={<Login />} />
             <Route path="/admin/users" element={<User/>}/>
+            <Route path="/admin/members" element={<Members/>}/>
+            <Route path="/admin/memb" element={<Memb/>}/>
             {/* Add other routes as needed */}
           </Routes>
         </div>

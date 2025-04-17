@@ -25,6 +25,8 @@ new UserRepo(conn));
 
 builder.Services.AddScoped<ILocationInterface, LocationRepo>(provider =>
 new LocationRepo(conn));
+builder.Services.AddScoped<IPeopleInterface,PeopleRepo>(provider=>
+new PeopleRepo(conn));
 
 var app = builder.Build();
 

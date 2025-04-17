@@ -122,7 +122,7 @@ public class UserRepo : IUserInterface
                         while (await reader.ReadAsync())
                         {
                             var user = new Dictionary<string, object>{
-                                {"no.",reader.GetInt32(0)},
+                                {"id",reader.GetInt32(0)},
                                 {"name",reader.GetString(1)+ " "+reader.GetString(2)},
                                 {"mobile",reader.GetString(3)},
                                 {"status",reader.GetString(4)},
@@ -236,13 +236,13 @@ public class UserRepo : IUserInterface
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
-                var query = "UPDATE users SET status=@status WHERE id=@id";
+                var query = "UPDATE users SET status=@status::status WHERE id=@id";
 
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@status", status);
                     cmd.Parameters.AddWithValue("@id", id);
-                    int row = await cmd.ExecuteNonQueryAsync ();
+                    int row =  cmd.ExecuteNonQuery();
                     if (row == 1)
                     {
                         return 1;
@@ -262,8 +262,5 @@ public class UserRepo : IUserInterface
             return -1;
         }
     }
-
-
-
 
 }

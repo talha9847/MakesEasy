@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import Navbar from "./Navbar";
 import { useForm } from "react-hook-form";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const {
@@ -25,9 +27,14 @@ const Login = () => {
       if (response.ok) {
         var result = await response.json();
         if (result.role == "Admin") {
-          window.location.href = "admin/dashboard";
+          toast.success("Welcome Admin Redirecting", {
+            autoClose: 2000,
+            onClose: () => {
+              window.location.href = "admin/dashboard";
+            },
+          });
         } else {
-          console.log(result);
+          toast.error("Invalid role or unauthorized access");
         }
       }
     } catch (error) {
@@ -37,6 +44,8 @@ const Login = () => {
 
   return (
     <>
+      <ToastContainer position="top-right" autoClose={3000} />
+
       <Navbar />
       <div className="bg-gray-100 min-h-[88.5vh] flex items-center justify-center px-4">
         <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200 w-full max-w-md">

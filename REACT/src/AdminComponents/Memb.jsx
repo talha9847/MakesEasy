@@ -1,0 +1,319 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Navbar from "./Navbar";
+import Sidebar from "./Sidebar";
+import { Users, UserPlus, Edit, Trash2 } from "lucide-react";
+import axios from "axios";
+import { useForm } from "react-hook-form";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Warning } from "postcss";
+
+export const Memb = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    mobile: "",
+    waqt: "",
+    age: "",
+    occupation: "",
+  });
+  const [editing, setEditing] = useState(false);
+  const [people, setPeople] = useState([]);
+  const [occupation, setOccupation] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+  const routeParams = {
+    vId: 3,
+    tId: 1,
+    dId: 1,
+    sId: 1,
+    cId: 1,
+  };
+  const onSubmit = async (data) => {
+    if (editing) {
+      await axios.put("http://localhost:5169/api/People/UpdatePeople",data);
+      toast.success("Member updated Successfully")
+      await getPeople()
+      setShowModal(false)
+    } else {
+      var res = axios.post(
+        "http://localhost:5169/api/People/InsertPeople/3/1/1/1/1",
+        data
+      );
+      reset();
+      toast.success("Member added successfully!");
+    }
+  };
+  const handleOccupation = async () => {
+    var res = await axios.get("http://localhost:5169/Location/GetOccupations");
+    await getPeople();
+    var talha = res.data.occupation;
+    setOccupation(talha);
+  };
+
+  const getPeople = async () => {
+    const res = await axios.get(
+      "http://localhost:5169/api/People/GetPeopleByVillage/3"
+    );
+    setPeople(res.data.people);
+    console.log(people);
+    people.map((member) => {
+      console.log(member.id);
+    });
+  };
+
+  useEffect(() => {
+    handleOccupation();
+    getPeople();
+  }, []);
+
+  return (
+    <div>
+      <ToastContainer position="top-right" autoClose={3000} />
+      <div className="navbar border-2 border-red-400 h-12">
+        <Navbar />
+      </div>
+      <div className="border-2 border-red-500">
+        <Sidebar />
+      </div>
+
+      <div className="ml-64">
+        <div className="top flex justify-between px-4 py-3 items-center">
+          <h1 className="p-3 text-2xl flex items-center gap-3 font-bold">
+            <Users className="hover:scale-125 hover:cursor-pointer" />
+            Members
+          </h1>
+          <button
+            onClick={() => {
+              setShowModal(true);
+              handleOccupation();
+              reset({
+                name: "",
+                mobile: "",
+                age: "",
+                waqt: "",
+                occupationId: "",
+              });
+            }}
+            className="flex items-center justify-center border-2 border-black  py-2 px-4 rounded-lg  hover:bg-black hover:text-white transition-all duration-200"
+          >
+            <UserPlus className="mr-2 h-5 w-5" />
+            <span>Add member</span>
+          </button>
+        </div>
+
+        <div className="table mt-10 px-4 w-full">
+          <div className="head flex flex-col rounded-lg overflow-hidden shadow-lg border border-gray-200 h-[500px]">
+            <h1 className="pl-6 text-xl font-sans font-semibold py-4 bg-black text-white rounded-t-lg">
+              Member List
+            </h1>
+            <div className="overflow-y-auto">
+              <table className="min-w-full">
+                <thead className="bg-gray-100 border-b border-gray-200 sticky top-0">
+                  <tr>
+                    <th className="px-6 py-4 text-left  text-gray-900 text-[17px] font-semibold">
+                      Name
+                    </th>
+                    <th className="px-6 py-4 text-left  text-gray-900 text-[17px] font-semibold">
+                      Mobile
+                    </th>
+                    <th className="px-6 py-4 text-left  text-gray-900 text-[17px] font-semibold">
+                      Waqt
+                    </th>
+                    <th className="px-6 py-4 text-left  text-gray-900 text-[17px] font-semibold">
+                      Occupation
+                    </th>
+                    <th className="px-6 py-4 text-left  text-gray-900 text-[17px] font-semibold">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {people.map((member) => (
+                    <tr
+                      key={member.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {member.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {member.mobile}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {member.waqt}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {member.occupation}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => {
+                              setShowModal(true);
+                              setEditing(true);
+                              reset({
+                                id:member.id,
+                                name: member.name,
+                                mobile: member.mobile,
+                                age: member.age,
+                                waqt: member.waqt,
+                                occupationId: member.occupationId,
+                              });
+                            }}
+                            className="p-1 rounded-full hover:bg-gray-200 transition-colors"
+                          >
+                            <Edit size={18} className="text-gray-700" />
+                          </button>
+                          <button className="p-1 rounded-full hover:bg-gray-200 transition-colors">
+                            <Trash2 size={18} className="text-gray-700" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-opacity-50  flex items-center justify-center">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col p-6 gap-4 bg-white rounded-lg shadow-lg w-96"
+          >
+            <h1 className="text-xl text-center">
+              {editing ? "Update Member" : "Add Member"}
+            </h1>
+            <div className="flex flex-col">
+              <input
+                {...register("name", {
+                  required: "Full name is requiered",
+                })}
+                type="text"
+                name="name"
+                id="fullName"
+                placeholder="Talha Malek"
+                className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              />
+              <span className="text-red-500 text-sm">
+                {errors.name?.message}
+              </span>
+            </div>
+
+            <div className="flex flex-col">
+              <input
+                {...register("mobile", {
+                  required: "Mobile number is required",
+                  pattern: {
+                    value: /^[6-9]\d{9}$/,
+                    message: "Please enter Valid Mobile number",
+                  },
+                })}
+                type="text"
+                name="mobile"
+                id="mobile"
+                placeholder="9106704675"
+                className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              />
+              <span className="text-sm text-red-500">
+                {errors.mobile?.message}
+              </span>
+            </div>
+
+            <div className="flex flex-col">
+              <input
+                {...register("age", {
+                  required: "Age is required",
+                  pattern: {
+                    value: /^(1[01][0-9]|120|[1-9][0-9]?)$/,
+                    message: "Enter a valid age between 1 and 120",
+                  },
+                })}
+                type="number"
+                name="age"
+                id="age"
+                placeholder="21"
+                className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              />
+              <span className="text-sm text-red-500">
+                {errors.age?.message}
+              </span>
+            </div>
+
+            <div className="flex flex-col">
+              <select
+                {...register("waqt", {
+                  required: "Please  Select a Waqt",
+                })}
+                name="waqt"
+                id="waqt"
+                className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              >
+                <option value="">Select Waqt</option>
+                <option value="4 Month">4 Month</option>
+                <option value="40 Days">40 Days</option>
+                <option value="10 Days">10 Days</option>
+                <option value="3 Days">3 Days</option>
+              </select>
+
+              <span className="text-sm text-red-500">
+                {errors.waqt?.message}
+              </span>
+            </div>
+
+            <div className="flex flex-col">
+              <select
+                {...register("occupationId", {
+                  required: "Occupation is required",
+                })}
+                name="occupationId"
+                id="occupation"
+                className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              >
+                <option value="">Select Occupation</option>
+                {occupation.map((val) => (
+                  <option key={val.id} value={val.id}>
+                    {val.occupation}
+                  </option>
+                ))}
+              </select>
+              <span className="text-sm text-red-500">
+                {errors.occupationId?.message}
+              </span>
+            </div>
+
+            <div className="flex justify-between mt-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowModal(false);
+                  setEditing(false);
+                }}
+                className="bg-gray-500 text-white p-2 rounded-lg w-full hover:bg-gray-600 focus:outline-none"
+              >
+                Close
+              </button>
+
+              <button
+                type="submit"
+                className="bg-black text-white p-2 rounded-lg w-full ml-2 hover:bg-gray-800 focus:outline-none"
+              >
+                {editing ? "Update" : "Submit"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+};

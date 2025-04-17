@@ -3,6 +3,8 @@ import Navbar from "./Navbar";
 import { useForm } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react"; // Import icons
 import { useAsyncError } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SignUp = () => {
   const [countries, setCountries] = useState([]);
@@ -39,7 +41,6 @@ const SignUp = () => {
       return;
     }
 
-    console.log("Form Data:", data);
 
     try {
       const response = await fetch("http://localhost:5169/api/User/Register", {
@@ -52,9 +53,15 @@ const SignUp = () => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log("Form submitted successfully:", result);
+        toast.success("Sign up successfully",{
+          autoClose:2000,
+          onClose:()=>{
+            window.location.href="/login"
+          }
+        })
       } else {
         const errorResponse = await response.json();
+        toast.error("Error in Signup")
         console.error("Form submission failed:", errorResponse);
       }
     } catch (error) {
@@ -68,7 +75,6 @@ const SignUp = () => {
     fetch("http://localhost:5169/Location/GetCountries")
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setCountries(data.countryModel);
       })
       .catch((error) => {
@@ -78,11 +84,9 @@ const SignUp = () => {
 
   useEffect(() => {
     if (selectedCountry) {
-      console.log("talhaa");
       fetch(`http://localhost:5169/Location/GetStates/${selectedCountry}`)
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
           setStates(data.stateModel);
         })
         .catch((error) => {
@@ -96,7 +100,6 @@ const SignUp = () => {
       fetch(`http://localhost:5169/Location/GetDistricts/${selectedState}`)
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
           setDistricts(data.distModel);
         });
     }
@@ -107,7 +110,6 @@ const SignUp = () => {
       fetch(`http://localhost:5169/Location/GetTalukas/${selectedDistrict}`)
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
           setTalukas(data.talukaModel);
         });
     }
@@ -118,7 +120,6 @@ const SignUp = () => {
       fetch(`http://localhost:5169/Location/GetVillages/${selectedTaluka}`)
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
           setVillages(data.villageModel);
         });
     }
@@ -126,6 +127,8 @@ const SignUp = () => {
 
   return (
     <>
+      <ToastContainer position="top-right" autoClose={3000} />
+
       <Navbar />
       <div className="flex items-center justify-center bg-gray-100 text-black mt-20">
         <div className="w-[500px] bg-white p-8 rounded-lg shadow-lg border border-gray-200">

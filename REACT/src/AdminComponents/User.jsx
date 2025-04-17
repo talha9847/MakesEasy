@@ -13,87 +13,8 @@ import {
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import axios from "axios";
-
-const dummyData = {
-  approved: [
-    {
-      id: 1,
-      fname: "James",
-      lname: "Smith",
-      mobile: "1234567890",
-      status: "approved",
-      email: "james.smith@example.com",
-      date: "2023-05-15",
-    },
-    {
-      id: 5,
-      fname: "Emily",
-      lname: "Johnson",
-      mobile: "3332221111",
-      status: "approved",
-      email: "emily.johnson@example.com",
-      date: "2023-06-22",
-    },
-    {
-      id: 8,
-      fname: "William",
-      lname: "Brown",
-      mobile: "7778889999",
-      status: "approved",
-      email: "william.brown@example.com",
-      date: "2023-07-10",
-    },
-  ],
-  pending: [
-    {
-      id: 2,
-      fname: "Charlotte",
-      lname: "Davis",
-      mobile: "9876543210",
-      status: "pending",
-      email: "charlotte.davis@example.com",
-      date: "2023-08-05",
-    },
-    {
-      id: 3,
-      fname: "George",
-      lname: "Wilson",
-      mobile: "5555555555",
-      status: "pending",
-      email: "george.wilson@example.com",
-      date: "2023-08-12",
-    },
-    {
-      id: 6,
-      fname: "Alice",
-      lname: "Taylor",
-      mobile: "1112223333",
-      status: "pending",
-      email: "alice.taylor@example.com",
-      date: "2023-08-18",
-    },
-  ],
-  rejected: [
-    {
-      id: 4,
-      fname: "Daniel",
-      lname: "Lee",
-      mobile: "4444444444",
-      status: "rejected",
-      email: "daniel.lee@example.com",
-      date: "2023-07-25",
-    },
-    {
-      id: 7,
-      fname: "Sophia",
-      lname: "Walker",
-      mobile: "6667778888",
-      status: "rejected",
-      email: "sophia.walker@example.com",
-      date: "2023-08-01",
-    },
-  ],
-};
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const UserManagement = () => {
   const [status, setStatus] = useState("approved");
@@ -105,34 +26,41 @@ const UserManagement = () => {
   });
   const [searchTerm, setSearchTerm] = useState("");
 
-  // useEffect(() => {
-  //   setUsers(dummyData[status]);
-  // }, [status]);
+  const fetchData = async () => {
+    try {
+      var response = await axios.get(
+        "http://localhost:5169/api/User/GetUsers/3"
+      );
+      var data = response.data;
+      setLength({
+        approved: data.approved,
+        pending: data.pending,
+        rejected: data.rejected,
+      });
+
+      const talha = data[status];
+
+      setUsers(talha);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        var response = await axios.get(
-          "http://localhost:5169/api/User/PendingUser/4"
-        );
-        var data = response.data;
-        console.log(data);
-        setLength({
-          approved: data.approved,
-          pending: data.pending,
-          rejected: data.rejected,
-        });
-
-        console.log(length.approved.length);
-        const talha = data[status];
-
-        setUsers(talha);
-      } catch (error) {
-        console.error(error);
-      }
-    };
     fetchData();
   }, [status]);
+
+  const handleUpdateStatus = async (userId, status) => {
+    console.log(userId);
+    console.log(status);
+
+    try {
+      const response = await axios.patch(
+        `http://localhost:5169/api/User/UpdateStatus/${userId}/${status}`
+      );
+      console.log("Server response:", response.data);
+    } catch (error) {}
+  };
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -161,6 +89,8 @@ const UserManagement = () => {
 
   return (
     <div className="flex h-screen bg-white">
+      <ToastContainer position="top-right" autoClose={3000} />
+
       <Navbar />
       <Sidebar />
       <div className="flex flex-col flex-1 ml-64">
@@ -338,9 +268,33 @@ const UserManagement = () => {
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div
-                                className="cursor-pointer"
+                                  className={
+                                    user.status == "Approved"|| user.status=="Rejected"
+                                      ? "cursor-pointer"
+                                      : ""
+                                  }
                                   onClick={() => {
-                                    console.log("talhaaamalekk");
+                                    if (user.status == "Approved") {
+                                      handleUpdateStatus(
+                                        user.id,
+                                        "Pending"
+                                      ).then(() => {
+                                        toast.info(
+                                          `Heads up! ${user.name.toUpperCase()}'s status is now set to PENDING.`
+                                        );
+                                        fetchData();
+                                      });
+                                    } else if (user.status === "Rejected") {
+                                      handleUpdateStatus(
+                                        user.id,
+                                        "Approved"
+                                      ).then(() => {
+                                        toast.warning(
+                                          `⚠️ Status Update: ${user.name.toUpperCase()} is now approved.`
+                                        );
+                                        fetchData();
+                                      });
+                                    }
                                   }}
                                 >
                                   {getStatusBadge(user.status)}
@@ -349,13 +303,39 @@ const UserManagement = () => {
                               {status === "pending" && (
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                   <div className="flex space-x-2">
-                                    <button className="inline-flex items-center px-2.5 py-1.5 border border-gray-300 text-xs font-medium rounded text-black bg-white hover:bg-gray-100">
+                                    <button
+                                      onClick={() => {
+                                        handleUpdateStatus(
+                                          user.id,
+                                          "Approved"
+                                        ).then(() => {
+                                          toast.success(
+                                            `${user.name.toUpperCase()} has been approved! 🎉`
+                                          );
+                                          fetchData();
+                                        });
+                                      }}
+                                      className="inline-flex items-center px-2.5 py-1.5 border border-gray-300 text-xs font-medium rounded text-black bg-white hover:bg-gray-100"
+                                    >
                                       <UserCheck className="h-4 w-4 mr-1" />
                                       <span className="hidden sm:inline">
                                         Approve
                                       </span>
                                     </button>
-                                    <button className="inline-flex items-center px-2.5 py-1.5 border border-gray-300 text-xs font-medium rounded text-black bg-white hover:bg-gray-100">
+                                    <button
+                                      onClick={() => {
+                                        handleUpdateStatus(
+                                          user.id,
+                                          "Rejected"
+                                        ).then(() => {
+                                          toast.warning(
+                                            `⚠️ Unfortunately, ${user.name.toUpperCase()} has been rejected.`
+                                          );
+                                          fetchData();
+                                        });
+                                      }}
+                                      className="inline-flex items-center px-2.5 py-1.5 border border-gray-300 text-xs font-medium rounded text-black bg-white hover:bg-gray-100"
+                                    >
                                       <UserX className="h-4 w-4 mr-1" />
                                       <span className="hidden sm:inline">
                                         Reject

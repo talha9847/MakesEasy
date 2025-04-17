@@ -19,7 +19,7 @@ public class LocationRepo : ILocationInterface
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
-                var query = "SELECT id,name FROM countries";
+                var query = "SELECT id,name FROM countries ORDER BY name";
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
                     using (var reader = await cmd.ExecuteReaderAsync())
@@ -57,7 +57,7 @@ public class LocationRepo : ILocationInterface
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
-                var query = "SELECT id,name FROM states WHERE country_id=@id";
+                var query = "SELECT id,name FROM states WHERE country_id=@id ORDER BY name";
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@id", countryId);
@@ -98,7 +98,7 @@ public class LocationRepo : ILocationInterface
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
-                var query = "SELECT id,name FROM districts WHERE state_id=@id";
+                var query = "SELECT id,name FROM districts WHERE state_id=@id ORDER by name";
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@id", stateId);
@@ -137,7 +137,7 @@ public class LocationRepo : ILocationInterface
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
-                var query = "SELECT id,name FROM talukas WHERE district_id=@id";
+                var query = "SELECT id,name FROM talukas WHERE district_id=@id ORDER BY name";
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@id", districtId);
@@ -176,7 +176,7 @@ public class LocationRepo : ILocationInterface
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
-                var query = "SELECT id,name FROM villages WHERE taluka_id=@id";
+                var query = "SELECT id,name FROM villages WHERE taluka_id=@id ORDER BY name";
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@id", talukaId);
@@ -202,6 +202,35 @@ public class LocationRepo : ILocationInterface
         {
 
             System.Console.WriteLine("Error:" + ex.Message);
+            return null;
+        }
+    }
+
+    public async Task<List<OccupationModel>> GetOccupations(){
+        try
+        {
+            var occupations=new List<OccupationModel>();
+            using(var conn=new NpgsqlConnection(_connectionString)){
+                await conn.OpenAsync();
+
+                var query="SELECT id,occupation FROM occupations";
+                using(var cmd=new NpgsqlCommand(query,conn)){
+                    using(var reader=await cmd.ExecuteReaderAsync()){
+                        while(await reader.ReadAsync()){
+                            var occ=new OccupationModel{
+                                Id=reader.GetInt32(0),
+                                Occupation=reader.GetString(1)
+                            };
+                            occupations.Add(occ);
+                        }
+                    }
+                }
+            }
+            return occupations;
+        }
+        catch (System.Exception ex)
+        {
+            System.Console.WriteLine("Error: "+ex.Message);
             return null;
         }
     }

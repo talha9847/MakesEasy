@@ -74,7 +74,7 @@ namespace MyApp.Namespace
         }
 
         [HttpGet]
-        [Route("PendingUser/{villageId}")]
+        [Route("GetUsers/{villageId}")]
         public async Task<IActionResult> PendingUser(int villageId)
         {
             try
@@ -150,7 +150,7 @@ namespace MyApp.Namespace
         //     }
         // }
 
-        [HttpPut]
+        [HttpPatch]
         [Route("UpdateStatus/{id}/{status}")]
         public async Task<IActionResult> UpdateUser(int id,string status){
             try
