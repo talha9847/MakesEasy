@@ -3,6 +3,9 @@ import Navbar from "./Navbar";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
+import { useState } from "react";
+import { Turtle } from "lucide-react";
 
 const Login = () => {
   const {
@@ -11,6 +14,10 @@ const Login = () => {
     formState: { errors },
     clearErrors,
   } = useForm();
+
+  const [talukaModal, setTalukaModal] = useState(false);
+  const [availableRoles, setAvailableRoles] = useState([]);
+  const [idMap, setIdMap] = useState({});
 
   const onSubmit = async (data) => {
     console.log("Submitting data:", data);
@@ -27,14 +34,44 @@ const Login = () => {
       if (response.ok) {
         var result = await response.json();
         if (result.role == "Admin") {
-          toast.success("Welcome Admin Redirecting", {
-            autoClose: 2000,
-            onClose: () => {
-              window.location.href = "admin/dashboard";
-            },
+          // window.location.href = "admin/dashboard";
+          console.log(result);
+        }
+        if (result.role == "Admin2") {
+          setIdMap({
+            village_id: result.userDetail.villageId,
+            taluka_id: result.userDetail.talukaId,
           });
-        } else {
-          toast.error("Invalid role or unauthorized access");
+          const roles = [];
+          roles.push("village_id", "taluka_id");
+          setAvailableRoles(roles);
+          setTalukaModal(true);
+
+          // window.location.href = "admin/dashboard";
+        }
+        if (result.role == "Admin3") {
+          setIdMap({
+            village_id: result.userDetail.villageId,
+            taluka_id: result.userDetail.talukaId,
+            dist_id: result.userDetail.distId,
+          });
+          const roles = [];
+          roles.push("village_id", "taluka_id", "dist_id");
+          setAvailableRoles(roles);
+          setTalukaModal(true);
+        }
+        if (result.role == "Admin4") {
+          console.log(result.userDetail.stateId);
+          setIdMap({
+            village_id: result.userDetail.villageId,
+            taluka_id: result.userDetail.talukaId,
+            dist_id: result.userDetail.distId,
+            state_id: result.userDetail.stateId,
+          });
+          const roles = [];
+          roles.push("village_id", "taluka_id", "dist_id", "state_id");
+          setAvailableRoles(roles);
+          setTalukaModal(true);
         }
       }
     } catch (error) {
@@ -205,6 +242,51 @@ const Login = () => {
           </div>
         </div>
       </div>
+
+      {talukaModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">
+              Select Admin Role
+            </h2>
+
+            <div className="space-y-3">
+              {availableRoles.map((roleKey) => (
+                <button
+                  key={roleKey}
+                  onClick={async () => {
+                    const selectedId = idMap[roleKey];
+                    console.log(idMap[roleKey]);
+                    try {
+                      await axios.post(
+                        `http://localhost:5169/api/Role/SetRoles/${selectedId}/${roleKey}`,
+                        {},
+                        { withCredentials: true }
+                      );
+
+                      setTalukaModal(false);
+                      window.location.href = "admin/dashboard";
+                      // Optionally redirect or show success toast
+                    } catch (err) {
+                      console.error("Failed to set role:", err);
+                    }
+                  }}
+                  className="w-full bg-black text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200"
+                >
+                  {roleKey.replace("_id", "").toUpperCase()} Admin
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setTalukaModal(false)}
+              className="mt-5 text-sm text-gray-500 hover:underline"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 };

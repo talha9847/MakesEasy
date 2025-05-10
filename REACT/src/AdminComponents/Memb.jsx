@@ -8,16 +8,9 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Warning } from "postcss";
+import Swal from "sweetalert2";
 
 export const Memb = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    mobile: "",
-    waqt: "",
-    age: "",
-    occupation: "",
-  });
   const [editing, setEditing] = useState(false);
   const [people, setPeople] = useState([]);
   const [occupation, setOccupation] = useState([]);
@@ -37,10 +30,10 @@ export const Memb = () => {
   };
   const onSubmit = async (data) => {
     if (editing) {
-      await axios.put("http://localhost:5169/api/People/UpdatePeople",data);
-      toast.success("Member updated Successfully")
-      await getPeople()
-      setShowModal(false)
+      await axios.put("http://localhost:5169/api/People/UpdatePeople", data);
+      toast.success("Member updated Successfully");
+      await getPeople();
+      setShowModal(false);
     } else {
       var res = axios.post(
         "http://localhost:5169/api/People/InsertPeople/3/1/1/1/1",
@@ -48,6 +41,49 @@ export const Memb = () => {
       );
       reset();
       toast.success("Member added successfully!");
+    }
+  };
+
+  const Delete = async (id) => {
+    let res = await axios.delete(
+      `http://localhost:5169/api/People/DeletePeople/${id}`
+    );
+
+    if (res.status === 200) {
+      toast.warning(`User Deleted Successfully`);
+    } else {
+      toast.error("Error in Deleting User");
+    }
+  };
+
+  const deletePeople = async (id) => {
+    const result = await Swal.fire({
+      title: "Delete item?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      background: "#111827",
+      color: "#f9fafb",
+      iconColor: "#f59e0b",
+      showCancelButton: true,
+      confirmButtonColor: "#f9fafb",
+      cancelButtonColor: "#374151",
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "border border-gray-700 shadow-lg",
+        title: "text-lg font-semibold tracking-wide",
+        htmlContainer: "text-gray-300",
+        confirmButton:
+          "bg-white text-gray-900 px-4 py-2 font-medium uppercase tracking-wide",
+        cancelButton:
+          "bg-gray-700 text-gray-100 px-4 py-2 font-medium uppercase tracking-wide",
+        actions: "gap-3",
+      },
+    });
+
+    if (result.isConfirmed) {
+      await Delete(id);
+      await getPeople();
     }
   };
   const handleOccupation = async () => {
@@ -58,14 +94,17 @@ export const Memb = () => {
   };
 
   const getPeople = async () => {
-    const res = await axios.get(
-      "http://localhost:5169/api/People/GetPeopleByVillage/3"
-    );
-    setPeople(res.data.people);
-    console.log(people);
-    people.map((member) => {
-      console.log(member.id);
-    });
+    try {
+      const res = await axios.get(
+        "http://localhost:5169/api/People/GetPeopleByVillage",
+        {
+          withCredentials: true,
+        }
+      );
+      setPeople(res.data.people);
+    } catch (error) {
+      console.error("Error fetching people:", error);
+    }
   };
 
   useEffect(() => {
@@ -159,7 +198,7 @@ export const Memb = () => {
                               setShowModal(true);
                               setEditing(true);
                               reset({
-                                id:member.id,
+                                id: member.id,
                                 name: member.name,
                                 mobile: member.mobile,
                                 age: member.age,
@@ -169,10 +208,15 @@ export const Memb = () => {
                             }}
                             className="p-1 rounded-full hover:bg-gray-200 transition-colors"
                           >
-                            <Edit size={18} className="text-gray-700" />
+                            <Edit size={18} className="text-blue-700" />
                           </button>
-                          <button className="p-1 rounded-full hover:bg-gray-200 transition-colors">
-                            <Trash2 size={18} className="text-gray-700" />
+                          <button
+                            onClick={() => {
+                              deletePeople(member.id);
+                            }}
+                            className="p-1 rounded-full hover:bg-gray-200 transition-colors"
+                          >
+                            <Trash2 size={18} className="text-red-700" />
                           </button>
                         </div>
                       </td>
