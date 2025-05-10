@@ -42,14 +42,17 @@ namespace MyApp.Namespace
             }
         }
         [HttpGet]
-        [Route("GetPeopleByVillage/{villageId}")]
+        [Route("GetPeopleByVillage")]
 
-        public async Task<IActionResult> GetPeopleByVillage(int villageId)
+        public async Task<IActionResult> GetPeopleByVillage()
         {
             try
             {
-
-                var people = await _peopleRepo.GetPeopleByVillage(villageId);
+               int  villageId=Convert.ToInt32(HttpContext.Session.GetInt32("id"));
+                string role=HttpContext.Session.GetString("role");
+                System.Console.WriteLine(villageId+"  villageid");
+               
+                var people = await _peopleRepo.GetPeopleByVillage(role,villageId);
                 if (people != null)
                 {
                     return Ok(new { message = "Getting Successfull", People = people });
@@ -68,7 +71,7 @@ namespace MyApp.Namespace
 
         [HttpPut]
         [Route("UpdatePeople")]
-        public async Task<IActionResult> UpdatePeople([FromBody]PeopleModel people)
+        public async Task<IActionResult> UpdatePeople([FromBody] PeopleModel people)
         {
             try
             {
@@ -86,6 +89,56 @@ namespace MyApp.Namespace
             {
                 System.Console.WriteLine("Error: " + ex.Message);
                 return BadRequest(new { message = "People Not Found" + ex.Message });
+            }
+        }
+
+
+        [HttpDelete]
+        [Route("DeletePeople/{id}")]
+        public async Task<IActionResult> DeletePeople(int id)
+        {
+            try
+            {
+                var user = await _peopleRepo.DeletePeople(id);
+                if (user == 1)
+                {
+                    return Ok(new { message = "Deleted Successfully" });
+                }
+                else
+                {
+                    return BadRequest(new { message = "User not Found" });
+                }
+
+            }
+            catch (System.Exception ex)
+            {
+                System.Console.WriteLine("Error: " + ex.Message);
+                return BadRequest(new { message = "Error in Deleting" + ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [Route("GetCount/{role}/{villageId}")]
+
+        public async Task<IActionResult> GetCount(string role,int villageId)
+        {
+            try
+            {
+                var count = await _peopleRepo.GetCount(role,villageId);
+                if (count != null)
+                {
+                    return Ok(new { message = "Count Getting Successfull", Count = count });
+                }
+                else
+                {
+                    return BadRequest(new { message = "Not Found" });
+                }
+            }
+            catch (System.Exception ex)
+            {
+
+                System.Console.WriteLine("Error: " + ex.Message);
+                return BadRequest(new { message = "Not Found" + ex.Message });
             }
         }
     }

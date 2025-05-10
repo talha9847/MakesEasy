@@ -56,16 +56,17 @@ public class PeopleRepo : IPeopleInterface
     }
 
 
-    public async Task<List<PeopleModel>> GetPeopleByVillage(int villageId)
+    public async Task<List<PeopleModel>> GetPeopleByVillage(string role, int villageId)
     {
         try
         {
             var peoples = new List<PeopleModel>();
+          System.Console.WriteLine(role+"lkjlkjlkj kj lkjlk j ");
 
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
-                var query = "SELECT p.id,p.name,p.mobile,p.age,p.waqt,o.occupation,o.id FROM people p JOIN occupations o ON p.occupation=o.id";
+                var query = $"SELECT p.id,p.name,p.mobile,p.age,p.waqt,o.occupation,o.id FROM people p JOIN occupations o ON p.occupation=o.id WHERE p.{role}={villageId} ";
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@id", villageId);
@@ -108,7 +109,7 @@ public class PeopleRepo : IPeopleInterface
                 var query = "UPDATE people SET name=@name,mobile=@mobile,age=@age,waqt=@waqt, occupation=@occ WHERE id=@id";
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
-                    cmd.Parameters.AddWithValue("@id",people.Id);
+                    cmd.Parameters.AddWithValue("@id", people.Id);
                     cmd.Parameters.AddWithValue("@name", people.Name);
                     cmd.Parameters.AddWithValue("@mobile", people.Mobile);
                     cmd.Parameters.AddWithValue("@age", people.Age);
@@ -134,6 +135,85 @@ public class PeopleRepo : IPeopleInterface
             return -1;
         }
     }
+
+
+    public async Task<int> DeletePeople(int id)
+    {
+        try
+        {
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+                var query = "DELETE FROM people WHERE id=@id";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", id);
+                    int row = await cmd.ExecuteNonQueryAsync();
+                    if (row == 1)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+            }
+
+        }
+        catch (System.Exception ex)
+        {
+            System.Console.WriteLine("Error: " + ex.Message);
+            return -1;
+        }
+    }
+
+
+    public async Task<Dictionary<string, object>> GetCount(string role, int villageId)
+    {
+        try
+        {
+
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+                var query = @"SELECT
+                            COUNT(id) AS Members,
+                            COUNT(CASE WHEN occupation = 1 THEN 1 END) AS Students,
+                            COUNT(CASE WHEN waqt = '4 Month' THEN 1 END) AS Months,
+                            COUNT(CASE WHEN waqt = '40 Days' THEN 1 END) AS Days
+                        FROM people
+                        WHERE village_id=@id";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", villageId);
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            var counts = new Dictionary<string, object>{
+                                {"members",reader.GetInt32(0)},
+                                {"students",reader.GetInt32(1)},
+                                {"40Days",reader.GetInt32(2)},
+                                {"4Months",reader.GetInt32(3)}
+                            };
+                            return counts;
+
+                        }
+                    }
+                }
+            }
+            return null;
+
+        }
+        catch (System.Exception ex)
+        {
+            System.Console.WriteLine("Error: " + ex.Message);
+            return null;
+        }
+    }
+
+
 
 
 

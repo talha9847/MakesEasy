@@ -3,6 +3,7 @@ using MakesEasy.Interfaces;
 using MakesEasy.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MakesEasy.Services;
 
 namespace MyApp.Namespace
 {
@@ -11,11 +12,14 @@ namespace MyApp.Namespace
     public class UserController : ControllerBase
     {
         private readonly IUserInterface _userRepo;
+        private readonly JwtService _jwtService;
+
         private readonly ILocationInterface _locationRepo;
-        public UserController(IUserInterface userRepo, ILocationInterface locationRepo)
+        public UserController(IUserInterface userRepo, ILocationInterface locationRepo, JwtService jwtService)
         {
             _userRepo = userRepo;
             _locationRepo = locationRepo;
+            _jwtService = jwtService;
         }
 
 
@@ -48,17 +52,18 @@ namespace MyApp.Namespace
         [HttpPost]
         [Route("Login")]
 
-        public async Task<IActionResult> Login([FromBody] Dictionary<string, string> body)
+        public async Task<IActionResult> Login(string identifier,string password )
         {
             try
             {
-                string identifier = body["identifier"];
-                string password = body["password"];
+               
                 var user = await _userRepo.UserLogin(identifier, password);
 
                 if (user != null)
                 {
-                    return Ok(new { message = "Login sucessfull", UserDetail = user, Role = user["Role"].ToString() });
+                    var token = _jwtService.GenerateJwtToken(user);
+
+                    return Ok(new { message = "Login sucessfull", UserDetail = user, Role = user.Role.ToString(), Token = token });
                 }
                 else
                 {
@@ -152,24 +157,28 @@ namespace MyApp.Namespace
 
         [HttpPatch]
         [Route("UpdateStatus/{id}/{status}")]
-        public async Task<IActionResult> UpdateUser(int id,string status){
+        public async Task<IActionResult> UpdateUser(int id, string status)
+        {
             try
             {
-                var stat=await _userRepo.UpdateStatus(id,status);
-                if(stat==1){
-                    return Ok(new{sucess=true,message="Updated Successfully"});
+                var stat = await _userRepo.UpdateStatus(id, status);
+                if (stat == 1)
+                {
+                    return Ok(new { sucess = true, message = "Updated Successfully" });
                 }
-                if(stat==0){
-                    return Ok(new{success=false,message="No rows affected"});
+                if (stat == 0)
+                {
+                    return Ok(new { success = false, message = "No rows affected" });
                 }
-                else{
-                    return BadRequest(new{success=false,message="No task Found"});
+                else
+                {
+                    return BadRequest(new { success = false, message = "No task Found" });
                 }
             }
             catch (System.Exception ex)
             {
-                System.Console.WriteLine("Error: "+ex.Message);
-                return BadRequest(new{success=false,message="Error: "+ex.Message});
+                System.Console.WriteLine("Error: " + ex.Message);
+                return BadRequest(new { success = false, message = "Error: " + ex.Message });
             }
         }
 

@@ -1,67 +1,113 @@
+using System.Text;
 using MakesEasy.Interfaces;
 using MakesEasy.Repo;
+using MakesEasy.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(options =>
+builder.Services.AddAuthentication(options =>
 {
-    options.AddPolicy("AllowAnyOrigin", policy =>
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-                    policy.AllowAnyOrigin() 
-                      .AllowAnyHeader() // Allow any header
-                      .AllowAnyMethod(); // Allow any HTTP method (GET, POST, etc.)
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+});
+builder.Services.AddAuthorization();
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter 'Bearer' [space] and then your valid token.\n\nExample: **Bearer eyJhbGciOiJI...**"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
     });
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") 
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();  
+    });
+});
 
-builder.Services.AddOpenApi();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+// Add Scoped Services for Repositories and JWT Service
+var conn = builder.Configuration.GetConnectionString("conn");
+builder.Services.AddScoped<IUserInterface, UserRepo>(provider => new UserRepo(conn));
+builder.Services.AddScoped<ILocationInterface, LocationRepo>(provider => new LocationRepo(conn));
+builder.Services.AddScoped<IPeopleInterface, PeopleRepo>(provider => new PeopleRepo(conn));
+builder.Services.AddScoped<JwtService>();
+
+// Add controllers and endpoints
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-var conn = builder.Configuration.GetConnectionString("conn");
-System.Console.WriteLine("Opened connection");
-builder.Services.AddScoped<IUserInterface, UserRepo>(provider =>
-new UserRepo(conn));
-
-builder.Services.AddScoped<ILocationInterface, LocationRepo>(provider =>
-new LocationRepo(conn));
-builder.Services.AddScoped<IPeopleInterface,PeopleRepo>(provider=>
-new PeopleRepo(conn));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-app.UseSwagger();
-app.UseSwaggerUI();
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-app.UseCors("AllowAnyOrigin");
-app.UseHttpsRedirection(); 
+
+app.UseAuthentication(); 
+app.UseAuthorization();  
+
+app.UseCors("AllowFrontend");
+
+app.UseSession();
+
 app.MapControllers();
+
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)

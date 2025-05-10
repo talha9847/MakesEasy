@@ -3,6 +3,8 @@ using MakesEasy.Interfaces;
 using MakesEasy.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MakesEasy.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MyApp.Namespace
 {
@@ -12,10 +14,12 @@ namespace MyApp.Namespace
     {
 
         private readonly ILocationInterface _locationRepo;
+        private readonly JwtService _jwtService;
 
-        public LocationController(ILocationInterface locationRepo)
+        public LocationController(ILocationInterface locationRepo, JwtService jwtService)
         {
             _locationRepo = locationRepo;
+            _jwtService = jwtService;
         }
 
         [HttpGet]
@@ -171,7 +175,7 @@ namespace MyApp.Namespace
                 var occupation = await _locationRepo.GetOccupations();
                 if (occupation != null)
                 {
-                    return Ok(new { message = "Occupations Get Successfully",Occupation=occupation });
+                    return Ok(new { message = "Occupations Get Successfully", Occupation = occupation });
                 }
                 else
                 {
@@ -184,5 +188,23 @@ namespace MyApp.Namespace
                 return BadRequest(new { message = "Not Found" + ex.Message });
             }
         }
+
+
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("admin-section")]
+        public IActionResult AdminOnlyData()
+        {
+            return Ok("This is for Admins (Admin1, Admin2, Admin3, Admin4)");
+        }
+
+        [Authorize(Roles = "User")]
+        [HttpGet("user-section")]
+        public IActionResult UserOnlyData()
+        {
+            return Ok("This is for Users");
+        }
+
+
     }
 }

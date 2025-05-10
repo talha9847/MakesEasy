@@ -58,14 +58,14 @@ public class UserRepo : IUserInterface
         }
     }
 
-    public async Task<Dictionary<string, object>> UserLogin(string identifier, string password)
+    public async Task<UserModel> UserLogin(string identifier, string password)
     {
         try
         {
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
-                var query = "SELECT fname,lname,email,mobile,role,village FROM users WHERE (email=@identifier OR mobile=@identifier) AND password=@pass";
+                var query = "SELECT fname,lname,email,mobile,role,village,taluka,dist,state FROM users WHERE (email=@identifier OR mobile=@identifier) AND password=@pass";
 
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
@@ -75,19 +75,19 @@ public class UserRepo : IUserInterface
                     {
                         if (await reader.ReadAsync())
                         {
-                            var user = new Dictionary<string, object>{
-                                {"Name",reader.GetString(0) +" "+reader.GetString(1)},
-                                {"Email",reader.GetString(2)},
-                                {"Mobile",reader.GetString(3)},
-                                {"Role",reader.GetString(4)},
-                                {"Village",reader.GetInt32(5)}
-
+                            var user=new UserModel{
+                                FirstName=reader.GetString(0),
+                                LastName=reader.GetString(1),
+                                Email=reader.GetString(2),
+                                Mobile=reader.GetString(3),
+                                Role=reader.GetString(4),
+                                VillageId=reader.GetInt32(5),
+                                TalukaId=reader.GetInt32(6),
+                                DistId=reader.GetInt32(7),
+                                StateId=reader.GetInt32(8),
                             };
 
-                            if (user["Role"].ToString() == "User")
-                            {
-                                System.Console.WriteLine("User talha");
-                            }
+                            
                             return user;
                         }
                     }
