@@ -1,5 +1,5 @@
-import Navbar from "./Navbar"
-import Sidebar from "./Sidebar"
+import Navbar from "./Navbar";
+import Sidebar from "./Sidebar";
 import {
   Home,
   Users,
@@ -12,9 +12,35 @@ import {
   Activity,
   PieChart,
   TrendingUp,
-} from "lucide-react"
+} from "lucide-react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const Dashboard = () => {
+  const [stats, setStats] = useState({
+    members: 0,
+    students: 0,
+    "4Months": 0,
+    "40Days": 0,
+  });
+  const navigate=useNavigate();
+
+  useEffect(() => {
+    const fetchStats =async () => {
+      try {
+        const res= await axios.get("http://localhost:5169/api/People/GetCount",{
+          withCredentials:true
+        })
+        setStats(res.data.count)
+        console.log(res.data)
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchStats();
+  }, []);
+
   return (
     <div className="relative min-h-screen bg-gray-50 mt-16">
       <Navbar />
@@ -29,7 +55,9 @@ export const Dashboard = () => {
           {/* Welcome Section */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-            <p className="text-gray-600 mt-1">Welcome back! Here's an overview of your statistics</p>
+            <p className="text-gray-600 mt-1">
+              Welcome back! Here's an overview of your statistics
+            </p>
           </div>
 
           {/* Stats Cards */}
@@ -46,13 +74,17 @@ export const Dashboard = () => {
                 </span>
               </div>
               <div className="mt-auto">
-                <p className="text-sm font-medium text-gray-500">Total Houses</p>
+                <p className="text-sm font-medium text-gray-500">
+                  Total Houses
+                </p>
                 <h3 className="text-2xl font-bold text-gray-900 mt-1">88</h3>
               </div>
             </div>
 
             {/* Card 2 */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col">
+            <div onClick={()=>{
+              navigate('/admin/members')
+            }}  className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col">
               <div className="flex justify-between items-start mb-4">
                 <div className="p-2 bg-black/5 rounded-lg">
                   <Users className="h-6 w-6 text-black" />
@@ -62,14 +94,16 @@ export const Dashboard = () => {
                   8%
                 </span>
               </div>
-              <div className="mt-auto">
+              <div  className="mt-auto">
                 <p className="text-sm font-medium text-gray-500">Members</p>
-                <h3 className="text-2xl font-bold text-gray-900 mt-1">88</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mt-1">{stats.members}</h3>
               </div>
             </div>
 
             {/* Card 3 */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col">
+            <div onClick={()=>{
+              navigate('/admin/students')
+            }} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col">
               <div className="flex justify-between items-start mb-4">
                 <div className="p-2 bg-black/5 rounded-lg">
                   <GraduationCap className="h-6 w-6 text-black" />
@@ -81,7 +115,7 @@ export const Dashboard = () => {
               </div>
               <div className="mt-auto">
                 <p className="text-sm font-medium text-gray-500">Students</p>
-                <h3 className="text-2xl font-bold text-gray-900 mt-1">88</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mt-1">{stats.students}</h3>
               </div>
             </div>
 
@@ -94,7 +128,7 @@ export const Dashboard = () => {
               </div>
               <div className="mt-auto">
                 <p className="text-sm font-medium text-gray-500">4 Month</p>
-                <h3 className="text-2xl font-bold text-gray-900 mt-1">88</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mt-1">{stats["4Months"]}</h3>
               </div>
             </div>
 
@@ -107,7 +141,7 @@ export const Dashboard = () => {
               </div>
               <div className="mt-auto">
                 <p className="text-sm font-medium text-gray-500">40 Days</p>
-                <h3 className="text-2xl font-bold text-gray-900 mt-1">88</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mt-1">{stats["40Days"]}</h3>
               </div>
             </div>
           </div>
@@ -119,7 +153,9 @@ export const Dashboard = () => {
               <div className="flex justify-between items-center mb-6">
                 <h3 className="font-semibold text-lg">Monthly Overview</h3>
                 <div className="flex space-x-2">
-                  <button className="px-3 py-1 text-xs font-medium bg-black text-white rounded-md">Month</button>
+                  <button className="px-3 py-1 text-xs font-medium bg-black text-white rounded-md">
+                    Month
+                  </button>
                   <button className="px-3 py-1 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-md">
                     Year
                   </button>
@@ -174,7 +210,9 @@ export const Dashboard = () => {
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="font-semibold text-lg">Recent Activities</h3>
-                <button className="text-sm text-black hover:underline">View All</button>
+                <button className="text-sm text-black hover:underline">
+                  View All
+                </button>
               </div>
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
@@ -211,7 +249,9 @@ export const Dashboard = () => {
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="font-semibold text-lg">Important Dates</h3>
-                <button className="text-sm text-black hover:underline">View Calendar</button>
+                <button className="text-sm text-black hover:underline">
+                  View Calendar
+                </button>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
@@ -254,8 +294,7 @@ export const Dashboard = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
-
+export default Dashboard;

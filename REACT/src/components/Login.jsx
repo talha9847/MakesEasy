@@ -20,15 +20,16 @@ const Login = () => {
   const [idMap, setIdMap] = useState({});
 
   const onSubmit = async (data) => {
+    var form = new FormData();
+    form.append("identifier", data.identifier);
+    form.append("password", data.password);
     console.log("Submitting data:", data);
 
     try {
       const response = await fetch("http://localhost:5169/api/User/Login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+        body: form,
+        credentials: "include",
       });
 
       if (response.ok) {
@@ -72,7 +73,15 @@ const Login = () => {
           roles.push("village_id", "taluka_id", "dist_id", "state_id");
           setAvailableRoles(roles);
           setTalukaModal(true);
+          toast.success("Login Successfull");
         }
+        if (result.role == "User") {
+
+          console.log(result.userDetail.villageId+" lkjfdlk ")
+          toast.success("Welcome to Makes Easy!")
+        }
+      } else {
+        toast.error("Invalid Username or Password");
       }
     } catch (error) {
       console.error("error here ", error);

@@ -21,13 +21,7 @@ export const Memb = () => {
     reset,
     formState: { errors },
   } = useForm();
-  const routeParams = {
-    vId: 3,
-    tId: 1,
-    dId: 1,
-    sId: 1,
-    cId: 1,
-  };
+
   const onSubmit = async (data) => {
     if (editing) {
       await axios.put("http://localhost:5169/api/People/UpdatePeople", data);

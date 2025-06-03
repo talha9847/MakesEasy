@@ -1,0 +1,342 @@
+"use client";
+
+import { Users, UserPlus, Edit, Trash2 } from "lucide-react";
+import Navbar from "./Navbar";
+import Sidebar from "./Sidebar";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+
+export const Student = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+
+  return (
+    <div>
+      <div className="navbar border-2 border-red-400 h-12">
+        <Navbar />
+      </div>
+      <div className="border-2 border-red-500">
+        <Sidebar />
+      </div>
+
+      <div className="ml-64">
+        <div className="top flex justify-between px-4 py-3 items-center">
+          <h1 className="p-3 text-2xl flex items-center gap-3 font-bold">
+            <Users className="hover:scale-125 hover:cursor-pointer" />
+            Members
+          </h1>
+          <button
+            onClick={() => {
+              setShowModal(true);
+              reset({
+                name:"",
+                mobile:"",
+                waqt:"",
+                age:"",
+                field:"",
+                year:""
+              })
+            }}
+            className="flex items-center justify-center border-2 border-black py-2 px-4 rounded-lg hover:bg-black hover:text-white transition-all duration-200"
+          >
+            <UserPlus className="mr-2 h-5 w-5" />
+            <span>Add member</span>
+          </button>
+        </div>
+
+        <div className="table mt-10 px-4 w-full">
+          <div className="head flex flex-col rounded-lg overflow-hidden shadow-lg border border-gray-200 h-[500px]">
+            <h1 className="pl-6 text-xl font-sans font-semibold py-4 bg-black text-white rounded-t-lg">
+              Member List
+            </h1>
+            <div className="overflow-y-auto">
+              <table className="min-w-full">
+                <thead className="bg-gray-100 border-b border-gray-200 sticky top-0">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-gray-900 text-[17px] font-semibold">
+                      Name
+                    </th>
+                    <th className="px-6 py-4 text-left text-gray-900 text-[17px] font-semibold">
+                      Mobile
+                    </th>
+                    <th className="px-6 py-4 text-left text-gray-900 text-[17px] font-semibold">
+                      Waqt
+                    </th>
+                    <th className="px-6 py-4 text-left text-gray-900 text-[17px] font-semibold">
+                      Field
+                    </th>
+                    <th className="px-6 py-4 text-left text-gray-900 text-[17px] font-semibold">
+                      Year
+                    </th>
+                    <th className="px-6 py-4 text-left text-gray-900 text-[17px] font-semibold">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  <tr className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap">John Doe</td>
+                    <td className="px-6 py-4 whitespace-nowrap">9876543210</td>
+                    <td className="px-6 py-4 whitespace-nowrap">40 Days</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      Computer Science
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">2023</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex space-x-2">
+                        <button className="p-1 rounded-full hover:bg-gray-200 transition-colors">
+                          <Edit size={18} className="text-blue-700" />
+                        </button>
+                        <button className="p-1 rounded-full hover:bg-gray-200 transition-colors">
+                          <Trash2 size={18} className="text-red-700" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Modal Design */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <form
+              onSubmit={handleSubmit()}
+              className="bg-white p-6 rounded-lg shadow-lg w-96 space-y-4"
+            >
+              <h2 className="text-xl font-semibold text-center mb-4">
+                Add Member
+              </h2>
+
+              <input
+                {...register("name", {
+                  required: "Name is required",
+                })}
+                type="text"
+                name="name"
+                placeholder="Name"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none"
+              />
+              <span className="text-xs text-red-500">
+                {errors.name?.message}
+              </span>
+
+              <input
+                {...register("mobile", {
+                  required: "Mobile Number is required",
+                  pattern: {
+                    value: /^[6-9]\d{9}$/,
+                    message: "Please enter valid Mobile Number",
+                  },
+                })}
+                type="text"
+                placeholder="Mobile"
+                name="mobile"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none"
+              />
+              <span className="text-xs text-red-500">
+                {errors.mobile?.message}
+              </span>
+
+              <input
+                {...register("age", {
+                  required: "Age is required",
+                  pattern: {
+                    value: /^(1[01][0-9]|120|[1-9][0-9]?)$/,
+                    message: "Enter a valid age between 1 and 120",
+                  },
+                })}
+                type="number"
+                name="age"
+                id="age"
+                placeholder="21"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none"
+              />
+              <span className="text-xs text-red-500">
+                {errors.age?.message}
+              </span>
+
+              <select
+                {...register("waqt", {
+                  required: "Please select Waqt",
+                })}
+                name="waqt"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none"
+              >
+                <option value="">Select Waqt</option>
+                <option value="4 Month">4 Month</option>
+                <option value="40 Days">40 Days</option>
+                <option value="10 Days">10 Days</option>
+                <option value="3 Days">3 Days</option>
+              </select>
+              <span className="text-xs text-red-500">
+                {errors.waqt?.message}
+              </span>
+
+              <select
+                {...register("field", {
+                  required: "Please select a field",
+                })}
+                name="field"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none"
+              >
+                <option value="">Select field</option>
+
+                <optgroup label="School">
+                  <option value="10th">10th</option>
+                  <option value="11th Arts">11th Arts</option>
+                  <option value="11th Commerce">11th Commerce</option>
+                  <option value="11th Science">11th Science</option>
+                  <option value="12th Arts">12th Arts</option>
+                  <option value="12th Commerce">12th Commerce</option>
+                  <option value="12th Science">12th Science</option>
+                </optgroup>
+
+                <optgroup label="College - Arts, Commerce & Science">
+                  <option value="B.A.">B.A.</option>
+                  <option value="M.A.">M.A.</option>
+                  <option value="B.COM.">B.COM.</option>
+                  <option value="M.COM.">M.COM.</option>
+                  <option value="B.SC.">B.SC.</option>
+                  <option value="M.SC.">M.SC.</option>
+                  <option value="BCA">BCA (Computer Applications)</option>
+                  <option value="MCA">MCA (Computer Applications)</option>
+                  <option value="BBA">BBA (Business Administration)</option>
+                  <option value="MBA">MBA (Business Administration)</option>
+                  <option value="BMS">BMS (Management Studies)</option>
+                  <option value="PGDM">PGDM (Diploma in Management)</option>
+                </optgroup>
+
+                <optgroup label="Engineering & Technology">
+                  <option value="Diploma in Engineering">
+                    Diploma in Engineering
+                  </option>
+                  <option value="B.E">B.E</option>
+                  <option value="B.Tech">B.Tech</option>
+                  <option value="M.E">M.E</option>
+                  <option value="M.Tech">M.Tech</option>
+                  <option value="B.Arch">B.Arch (Architecture)</option>
+                  <option value="M.Arch">M.Arch (Architecture)</option>
+                  <option value="B.Plan">B.Plan (Planning)</option>
+                  <option value="M.Plan">M.Plan (Planning)</option>
+                  <option value="B.Des">B.Des (Design)</option>
+                  <option value="M.Des">M.Des (Design)</option>
+                </optgroup>
+
+                <optgroup label="Medical & Allied Health">
+                  <option value="MBBS">MBBS</option>
+                  <option value="BDS">BDS</option>
+                  <option value="BAMS">BAMS</option>
+                  <option value="BHMS">BHMS</option>
+                  <option value="BUMS">BUMS</option>
+                  <option value="BSMS">BSMS</option>
+                  <option value="BVSc">BVSc (Veterinary)</option>
+                  <option value="MD">MD</option>
+                  <option value="MS">MS (Surgery)</option>
+                  <option value="MDS">MDS (Dental Surgery)</option>
+                  <option value="BPT">BPT (Physiotherapy)</option>
+                  <option value="MPT">MPT (Physiotherapy)</option>
+                  <option value="BMLT">BMLT (Medical Lab Technology)</option>
+                  <option value="BOT">BOT (Occupational Therapy)</option>
+                  <option value="BASLP">BASLP (Speech & Audiology)</option>
+                  <option value="B.Sc. Nursing">B.Sc. Nursing</option>
+                  <option value="M.Sc. Nursing">M.Sc. Nursing</option>
+                  <option value="GNM">GNM (Nursing)</option>
+                  <option value="ANM">ANM (Nursing)</option>
+                  <option value="B.Pharm">B.Pharm</option>
+                  <option value="D.Pharm">D.Pharm</option>
+                  <option value="M.Pharm">M.Pharm</option>
+                  <option value="MPH">MPH (Public Health)</option>
+                </optgroup>
+
+                <optgroup label="Education">
+                  <option value="B.Ed">B.Ed</option>
+                  <option value="M.Ed">M.Ed</option>
+                  <option value="D.Ed">D.Ed</option>
+                </optgroup>
+
+                <optgroup label="Law">
+                  <option value="LLB">LLB (Bachelor of Laws)</option>
+                  <option value="LLM">LLM (Master of Laws)</option>
+                </optgroup>
+
+                <optgroup label="Other / Competitive">
+                  <option value="ITI">ITI</option>
+                  <option value="IELTS">IELTS</option>
+                  <option value="TOEFL">TOEFL</option>
+                  <option value="PHD">Ph.D</option>
+                  <option value="CA">CA (Chartered Accountant)</option>
+                  <option value="CS">CS (Company Secretary)</option>
+                  <option value="CMA">
+                    CMA (Cost & Management Accounting)
+                  </option>
+                  <option value="UPSC">UPSC</option>
+                  <option value="SSC">SSC</option>
+                  <option value="Bank PO">Bank PO</option>
+                </optgroup>
+              </select>
+
+              <span className="text-xs text-red-500">
+                {errors.field?.message}
+              </span>
+
+              <select
+                {...register("year", {
+                  required: "Please select the year/level",
+                })}
+                name="year"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none"
+              >
+                <option value="">Select year/level</option>
+
+                <optgroup label="School">
+                  <option value="1st Semester">1st Semester</option>
+                  <option value="2nd Semester">2nd Semester</option>
+                </optgroup>
+
+                <optgroup label="College">
+                  <option value="1st Year">1st Year (FY)</option>
+                  <option value="2nd Year">2nd Year (SY)</option>
+                  <option value="3rd Year">3rd Year (TY)</option>
+                  <option value="4th Year">4th Year</option>
+                  <option value="5th Year">5th Year</option>{" "}
+                  <option value="6th Year">6th Year</option>{" "}
+                </optgroup>
+              </select>
+
+              <span className="text-xs text-red-500">
+                {errors.year?.message}
+              </span>
+
+              <div className="flex justify-end space-x-2 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                >
+                  Close
+                </button>
+                <button
+                  type="submit"
+                  className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Student;

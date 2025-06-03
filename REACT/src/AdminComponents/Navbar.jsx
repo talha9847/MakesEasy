@@ -25,8 +25,8 @@ const Navbar = () => {
         {/* Nav Links */}
         <ul className="flex items-center gap-8 text-lg">
           {[
-            { to: "/", img: home, text: "Home" },
-            { to: "/", img: about, text: "About" },
+            { to: "/admin/dashboard", img: home, text: "Dashboard" },
+            { to: "/admin/users", img: about, text: "Users" },
             { to: "/contactus", img: contact, text: "Contact" },
             { to: "/", img: logout, text: "Logout" },
           ].map((item, index) => (

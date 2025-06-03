@@ -8,9 +8,11 @@ import Aboutus from "./components/Aboutus";
 import ContactUs from "./components/ContactUs";
 import Login from "./components/Login";
 import { Dashboard } from "./AdminComponents/Dashboard";
-import User from "./AdminComponents/User"
-import { Members } from "./AdminComponents/Members";
+import User from "./AdminComponents/User";
 import { Memb } from "./AdminComponents/Memb";
+import Student from "./AdminComponents/Student";
+import ProtectedRoute from "./components/ProtectedRoute";
+
 const App = () => {
   return (
     <Router>
@@ -18,14 +20,21 @@ const App = () => {
         <div className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/admin/dashboard" element={<Dashboard/>}></Route>
+            <Route
+              path="/admin/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            ></Route>
             <Route path="/signup" element={<Sign />} />
             <Route path="/aboutus" element={<Aboutus />} />
             <Route path="/contactus" element={<ContactUs />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/admin/users" element={<User/>}/>
-            <Route path="/admin/members" element={<Members/>}/>
-            <Route path="/admin/memb" element={<Memb/>}/>
+            <Route path="/admin/users" element={<User />} />
+            <Route path="/admin/members" element={<Memb />} />
+            <Route path="admin/students" element={<Student />} />
             {/* Add other routes as needed */}
           </Routes>
         </div>
