@@ -61,8 +61,6 @@ public class PeopleRepo : IPeopleInterface
         try
         {
             var peoples = new List<PeopleModel>();
-          System.Console.WriteLine(role+"lkjlkjlkj kj lkjlk j ");
-
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
@@ -115,7 +113,6 @@ public class PeopleRepo : IPeopleInterface
                     cmd.Parameters.AddWithValue("@age", people.Age);
                     cmd.Parameters.AddWithValue("@waqt", people.Waqt);
                     cmd.Parameters.AddWithValue("@occ", people.OccupationId);
-                    System.Console.WriteLine(people.OccupationId);
                     int row = await cmd.ExecuteNonQueryAsync();
                     if (row == 1)
                     {
@@ -173,17 +170,16 @@ public class PeopleRepo : IPeopleInterface
     {
         try
         {
-
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
-                var query = @"SELECT
+                var query = $@"SELECT
                             COUNT(id) AS Members,
                             COUNT(CASE WHEN occupation = 1 THEN 1 END) AS Students,
                             COUNT(CASE WHEN waqt = '4 Month' THEN 1 END) AS Months,
                             COUNT(CASE WHEN waqt = '40 Days' THEN 1 END) AS Days
                         FROM people
-                        WHERE village_id=@id";
+                        WHERE {role}=@id";
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@id", villageId);
@@ -213,6 +209,48 @@ public class PeopleRepo : IPeopleInterface
         }
     }
 
+    public async Task<int> InsertStudent(StudentModel student)
+    {
+        try
+        {
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+                var query = "INSERT INTO students(name,mobile,age,waqt,field,year,village_id,taluka_id,dist_id,state_id,country_id) VALUES(@name,@mobile,@age,@waqt,@field,@year,@village,@taluka,@dist,@state,@country)";
+
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@name", student.Name);
+                    cmd.Parameters.AddWithValue("@mobile", student.Mobile);
+                    cmd.Parameters.AddWithValue("@age", student.Age);
+                    cmd.Parameters.AddWithValue("@waqt", student.Waqt);
+                    cmd.Parameters.AddWithValue("@field", student.Field);
+                    cmd.Parameters.AddWithValue("@year", student.Year);
+                    cmd.Parameters.AddWithValue("@village", student.VillageId);
+                    cmd.Parameters.AddWithValue("@taluka", student.TalukaId);
+                    cmd.Parameters.AddWithValue("@dist", student.DistId);
+                    cmd.Parameters.AddWithValue("@state", student.StateId);
+                    cmd.Parameters.AddWithValue("@country", student.CountryId);
+
+                    int row = cmd.ExecuteNonQuery();
+                    if (row == 1)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+            }
+        }
+        catch (System.Exception ex)
+        {
+
+            System.Console.WriteLine("Errorr: " + ex.Message);
+            return -1;
+        }
+    }
 
 
 

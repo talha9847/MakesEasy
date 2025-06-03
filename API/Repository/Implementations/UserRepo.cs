@@ -23,7 +23,7 @@ public class UserRepo : IUserInterface
                 await conn.OpenAsync();
 
                 System.Console.WriteLine("connectionn   ");
-                var query = "INSERT INTO USERS(fname,lname,email,mobile,password,country,state,dist,taluka,village)values(@fname,@lname,@email,@mobile,@pass,@country,@state,@dist,@taluka,@village)";
+                var query = "INSERT INTO USERS(fname,lname,email,mobile,password,country,state,dist,taluka,village,role)values(@fname,@lname,@email,@mobile,@pass,@country,@state,@dist,@taluka,@village,@role)";
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@fname", user.FirstName);
@@ -36,6 +36,7 @@ public class UserRepo : IUserInterface
                     cmd.Parameters.AddWithValue("@dist", user.DistId);
                     cmd.Parameters.AddWithValue("@taluka", user.TalukaId);
                     cmd.Parameters.AddWithValue("@village", user.VillageId);
+                    cmd.Parameters.AddWithValue("@role",user.Role);
 
                     int row = cmd.ExecuteNonQuery();
                     if (row == 1)
@@ -65,7 +66,7 @@ public class UserRepo : IUserInterface
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
-                var query = "SELECT fname,lname,email,mobile,role,village,taluka,dist,state FROM users WHERE (email=@identifier OR mobile=@identifier) AND password=@pass";
+                var query = "SELECT fname,lname,email,mobile,role,village,taluka,dist,state,country FROM users WHERE (email=@identifier OR mobile=@identifier) AND password=@pass";
 
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
@@ -85,6 +86,7 @@ public class UserRepo : IUserInterface
                                 TalukaId=reader.GetInt32(6),
                                 DistId=reader.GetInt32(7),
                                 StateId=reader.GetInt32(8),
+                                CountryId=reader.GetInt32(8),
                             };
 
                             
@@ -237,6 +239,7 @@ public class UserRepo : IUserInterface
             {
                 await conn.OpenAsync();
                 var query = "UPDATE users SET status=@status::status WHERE id=@id";
+                // var query = "UPDATE users SET status=@status::status WHERE id=@id";
 
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {

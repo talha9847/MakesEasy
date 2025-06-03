@@ -30,6 +30,7 @@ namespace MyApp.Namespace
         {
             try
             {
+                user.Role="User";
                 var entry = await _userRepo.UserRegister(user);
                 if (entry == 1)
                 {
@@ -52,16 +53,33 @@ namespace MyApp.Namespace
         [HttpPost]
         [Route("Login")]
 
-        public async Task<IActionResult> Login(string identifier,string password )
+        public async Task<IActionResult> Login([FromForm] string identifier, [FromForm] string password)
         {
             try
             {
-               
+
                 var user = await _userRepo.UserLogin(identifier, password);
+
 
                 if (user != null)
                 {
+
+                    System.Console.WriteLine(HttpContext.Session.GetInt32("villageId")+" i am villageid");
+                    HttpContext.Session.SetInt32("villageId", user.VillageId);
+                    HttpContext.Session.SetInt32("talukaId", user.TalukaId);
+                    HttpContext.Session.SetInt32("distId", user.DistId);
+                    HttpContext.Session.SetInt32("stateId", user.StateId);
+                    HttpContext.Session.SetInt32("countryId", user.CountryId);
                     var token = _jwtService.GenerateJwtToken(user);
+
+                    HttpContext.Response.Cookies.Append("AuthToken", token, new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.Strict,
+                        Expires = DateTime.UtcNow.AddDays(30)
+                    });
+
 
                     return Ok(new { message = "Login sucessfull", UserDetail = user, Role = user.Role.ToString(), Token = token });
                 }

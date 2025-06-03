@@ -16,10 +16,7 @@ namespace MyApp.Namespace
             {
                 HttpContext.Session.SetString("role", role);
                 HttpContext.Session.SetInt32("id", id);
-                var roles = HttpContext.Session.GetString("role");
-                int ids=Convert.ToInt32(HttpContext.Session.GetInt32("id"));
-                System.Console.WriteLine(roles);
-                System.Console.WriteLine(ids);
+
 
 
                 return Ok(new { message = "Role Setting Successfull" });
@@ -30,6 +27,29 @@ namespace MyApp.Namespace
 
                 System.Console.WriteLine("Error :" + ex.Message);
                 return BadRequest(new { message = "Error in Setting Role: " + ex.Message });
+            }
+        }
+
+        [HttpGet("Validate")]
+
+        public IActionResult Validate()
+        {
+            try
+            {
+                var role = HttpContext.Session.GetString("role");
+                var villageId = HttpContext.Session.GetInt32("villageId");
+
+                if (role == null || villageId == 0)
+                {
+                    return Unauthorized(new { message = "You have not logged in" });
+                }
+                return Ok(new { message = "You are Authorized" });
+            }
+            catch (System.Exception ex)
+            {
+
+                System.Console.WriteLine("Error :" + ex.Message);
+                return BadRequest(new { message = "Error in :" + ex.Message });
             }
         }
     }

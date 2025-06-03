@@ -18,11 +18,16 @@ namespace MyApp.Namespace
         }
 
         [HttpPost]
-        [Route("InsertPeople/{vId}/{tId}/{dId}/{sId}/{cId}")]
-        public async Task<IActionResult> InsertPeople([FromBody] PeopleModel people, int vId, int tId, int dId, int sId, int cId)
+        [Route("InsertPeoplebd")]
+        public async Task<IActionResult> InsertPeople([FromBody] PeopleModel people)
         {
             try
             {
+                int vId = Convert.ToInt32(HttpContext.Session.GetInt32("villageId"));
+                int tId = Convert.ToInt32(HttpContext.Session.GetInt32("talukaId"));
+                int dId = Convert.ToInt32(HttpContext.Session.GetInt32("distId"));
+                int sId = Convert.ToInt32(HttpContext.Session.GetInt32("stateId"));
+                int cId = Convert.ToInt32(HttpContext.Session.GetInt32("countryId"));
                 var peopels = await _peopleRepo.InsertPeople(people, vId, tId, dId, sId, cId);
 
                 if (peopels == 1)
@@ -48,11 +53,10 @@ namespace MyApp.Namespace
         {
             try
             {
-               int  villageId=Convert.ToInt32(HttpContext.Session.GetInt32("id"));
-                string role=HttpContext.Session.GetString("role");
-                System.Console.WriteLine(villageId+"  villageid");
-               
-                var people = await _peopleRepo.GetPeopleByVillage(role,villageId);
+                int villageId = Convert.ToInt32(HttpContext.Session.GetInt32("id"));
+                string role = HttpContext.Session.GetString("role");
+
+                var people = await _peopleRepo.GetPeopleByVillage(role, villageId);
                 if (people != null)
                 {
                     return Ok(new { message = "Getting Successfull", People = people });
@@ -118,13 +122,15 @@ namespace MyApp.Namespace
         }
 
         [HttpGet]
-        [Route("GetCount/{role}/{villageId}")]
+        [Route("GetCount")]
 
-        public async Task<IActionResult> GetCount(string role,int villageId)
+        public async Task<IActionResult> GetCount()
         {
             try
             {
-                var count = await _peopleRepo.GetCount(role,villageId);
+                string role = HttpContext.Session.GetString("role");
+                int villageId = Convert.ToInt32(HttpContext.Session.GetInt32("id"));
+                var count = await _peopleRepo.GetCount(role, villageId);
                 if (count != null)
                 {
                     return Ok(new { message = "Count Getting Successfull", Count = count });
@@ -139,6 +145,38 @@ namespace MyApp.Namespace
 
                 System.Console.WriteLine("Error: " + ex.Message);
                 return BadRequest(new { message = "Not Found" + ex.Message });
+            }
+        }
+
+        [HttpPost("InsertStudent")]
+        public async Task<IActionResult> InsertStudent(StudentModel student)
+        {
+            try
+            {
+                student.VillageId = Convert.ToInt32(HttpContext.Session.GetInt32("villageId"));
+                student.TalukaId = Convert.ToInt32(HttpContext.Session.GetInt32("talukaId"));
+                student.DistId = Convert.ToInt32(HttpContext.Session.GetInt32("distId"));
+                student.StateId = Convert.ToInt32(HttpContext.Session.GetInt32("stateId"));
+                student.CountryId = Convert.ToInt32(HttpContext.Session.GetInt32("countryId"));
+
+                if (student.VillageId == 0 || student.TalukaId == 0 || student.DistId == 0 || student.StateId == 0 || student.CountryId == 0)
+                {
+                    return BadRequest(new { message = "Session is over" });
+                }
+                var result = await _peopleRepo.InsertStudent(student);
+                if (result == 1)
+                {
+                    return Ok(new { meessage = "Student Inserted Successfully", success = true });
+                }
+                else
+                {
+                    return BadRequest(new { message = "Errrorr in Inserting Student" });
+                }
+            }
+            catch (System.Exception ex)
+            {
+
+                return BadRequest(new { message = "Error Found: " + ex.Message });
             }
         }
     }

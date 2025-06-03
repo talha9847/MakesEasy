@@ -9,6 +9,9 @@ public interface IPeopleInterface{
     Task<int> UpdatePeople(PeopleModel people);
     Task<int> DeletePeople(int id);
 
+    Task<int> InsertStudent(StudentModel student);
+
+
     Task<Dictionary<string,object>> GetCount(string role,int villageId);
     
 
