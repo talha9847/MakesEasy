@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using MakesEasy.Interfaces;
 using MakesEasy.Models;
+using MakesEasy.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +13,12 @@ namespace MyApp.Namespace
     public class PeopleController : ControllerBase
     {
         private readonly IPeopleInterface _peopleRepo;
+        private readonly JwtService _jwtService;
 
-        public PeopleController(IPeopleInterface peopleRepo)
+        public PeopleController(IPeopleInterface peopleRepo, JwtService jwtService)
         {
             _peopleRepo = peopleRepo;
+            _jwtService = jwtService;
         }
 
         [HttpPost]
@@ -129,6 +133,7 @@ namespace MyApp.Namespace
             try
             {
                 string role = HttpContext.Session.GetString("role");
+                System.Console.WriteLine(HttpContext.Session.GetString("role"));
                 int villageId = Convert.ToInt32(HttpContext.Session.GetInt32("id"));
                 var count = await _peopleRepo.GetCount(role, villageId);
                 if (count != null)
@@ -149,35 +154,56 @@ namespace MyApp.Namespace
         }
 
         [HttpPost("InsertStudent")]
-        public async Task<IActionResult> InsertStudent(StudentModel student)
+        public async Task<IActionResult> InsertStudent([FromForm] StudentModel student)
         {
             try
             {
-                student.VillageId = Convert.ToInt32(HttpContext.Session.GetInt32("villageId"));
-                student.TalukaId = Convert.ToInt32(HttpContext.Session.GetInt32("talukaId"));
-                student.DistId = Convert.ToInt32(HttpContext.Session.GetInt32("distId"));
-                student.StateId = Convert.ToInt32(HttpContext.Session.GetInt32("stateId"));
-                student.CountryId = Convert.ToInt32(HttpContext.Session.GetInt32("countryId"));
+                var villageId = User.FindFirst("villageId")?.Value;
+                var talukaId = User.FindFirst("talukaId")?.Value;
+                var distId = User.FindFirst("distId")?.Value;
+                var stateId = User.FindFirst("stateId")?.Value;
+                var countryId = User.FindFirst("countryId")?.Value;
 
-                if (student.VillageId == 0 || student.TalukaId == 0 || student.DistId == 0 || student.StateId == 0 || student.CountryId == 0)
+                if (string.IsNullOrEmpty(villageId) || string.IsNullOrEmpty(talukaId) ||
+                    string.IsNullOrEmpty(distId) || string.IsNullOrEmpty(stateId) ||
+                    string.IsNullOrEmpty(countryId))
                 {
-                    return BadRequest(new { message = "Session is over" });
+                    return Unauthorized(new { message = "Invalid or expired token." });
                 }
+
+                student.VillageId = Convert.ToInt32(villageId);
+                student.TalukaId = Convert.ToInt32(talukaId);
+                student.DistId = Convert.ToInt32(distId);
+                student.StateId = Convert.ToInt32(stateId);
+                student.CountryId = Convert.ToInt32(countryId);
+
                 var result = await _peopleRepo.InsertStudent(student);
+
                 if (result == 1)
                 {
-                    return Ok(new { meessage = "Student Inserted Successfully", success = true });
+                    return Ok(new { message = "Student Inserted Successfully", success = true });
                 }
                 else
                 {
-                    return BadRequest(new { message = "Errrorr in Inserting Student" });
+                    return BadRequest(new { message = "Error in Inserting Student" });
                 }
             }
             catch (System.Exception ex)
             {
-
                 return BadRequest(new { message = "Error Found: " + ex.Message });
             }
+        }
+
+        [HttpGet]
+        [Route("GetStudents")]
+        public async Task<IActionResult> GetStudents()
+        {
+
+            var role = User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var id = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            System.Console.WriteLine(id + " " + role);
+            // var student = await _peopleRepo.GetStudents(id, role);
+            return Ok(new { message = "Gettingn Students successfull" });
         }
     }
 }

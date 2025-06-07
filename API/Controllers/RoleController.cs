@@ -8,6 +8,7 @@ namespace MyApp.Namespace
     [ApiController]
     public class RoleController : ControllerBase
     {
+        public string Role;
 
         [HttpPost("SetRoles/{id}/{role}")]
         public IActionResult SetRoles(int id, string role)
@@ -17,7 +18,8 @@ namespace MyApp.Namespace
                 HttpContext.Session.SetString("role", role);
                 HttpContext.Session.SetInt32("id", id);
 
-
+                Role = HttpContext.Session.GetString("role");
+                System.Console.WriteLine(Role);
 
                 return Ok(new { message = "Role Setting Successfull" });
 

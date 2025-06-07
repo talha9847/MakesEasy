@@ -5,6 +5,7 @@ using MakesEasy.Models;
 using Npgsql;
 
 namespace MakesEasy.Repo;
+
 public class UserRepo : IUserInterface
 {
 
@@ -36,7 +37,7 @@ public class UserRepo : IUserInterface
                     cmd.Parameters.AddWithValue("@dist", user.DistId);
                     cmd.Parameters.AddWithValue("@taluka", user.TalukaId);
                     cmd.Parameters.AddWithValue("@village", user.VillageId);
-                    cmd.Parameters.AddWithValue("@role",user.Role);
+                    cmd.Parameters.AddWithValue("@role", user.Role);
 
                     int row = cmd.ExecuteNonQuery();
                     if (row == 1)
@@ -66,7 +67,7 @@ public class UserRepo : IUserInterface
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
-                var query = "SELECT fname,lname,email,mobile,role,village,taluka,dist,state,country FROM users WHERE (email=@identifier OR mobile=@identifier) AND password=@pass";
+                var query = "SELECT id,role FROM users WHERE (email=@identifier OR mobile=@identifier) AND password=@pass  AND status='Approved'";
 
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
@@ -76,20 +77,13 @@ public class UserRepo : IUserInterface
                     {
                         if (await reader.ReadAsync())
                         {
-                            var user=new UserModel{
-                                FirstName=reader.GetString(0),
-                                LastName=reader.GetString(1),
-                                Email=reader.GetString(2),
-                                Mobile=reader.GetString(3),
-                                Role=reader.GetString(4),
-                                VillageId=reader.GetInt32(5),
-                                TalukaId=reader.GetInt32(6),
-                                DistId=reader.GetInt32(7),
-                                StateId=reader.GetInt32(8),
-                                CountryId=reader.GetInt32(8),
+                            var user = new UserModel
+                            {
+                                Id = reader.GetInt32(0),
+                                Role = reader.GetString(1)
                             };
 
-                            
+
                             return user;
                         }
                     }
@@ -231,21 +225,27 @@ public class UserRepo : IUserInterface
         }
     }
 
-    public async Task<int> UpdateStatus(int id, string status)
+    public async Task<int> UpdateStatus(int id, string status, string type, int typeId)
     {
         try
         {
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
-                var query = "UPDATE users SET status=@status::status WHERE id=@id";
-                // var query = "UPDATE users SET status=@status::status WHERE id=@id";
+
+                var allowedColumns = new HashSet<string> { "village_id", "taluka_id", "dist_id" };
+                if (!allowedColumns.Contains(type))
+                {
+                    return -1;
+                }
+                var query = $"UPDATE users SET status=@status WHERE id=@id AND {type}=@typeId ";
 
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@status", status);
                     cmd.Parameters.AddWithValue("@id", id);
-                    int row =  cmd.ExecuteNonQuery();
+                    cmd.Parameters.AddWithValue("@typeId", typeId);
+                    int row = cmd.ExecuteNonQuery();
                     if (row == 1)
                     {
                         return 1;
@@ -263,6 +263,55 @@ public class UserRepo : IUserInterface
         {
             System.Console.WriteLine("Error: " + ex.Message);
             return -1;
+        }
+    }
+
+
+
+    public async Task<UserModel> GetOne(int id)
+    {
+        try
+        {
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+
+                var query = "SELECT fname,lname,email,mobile,village,taluka,dist,state,country,role FROM users WHERE id=@id";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", id);
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            var user = new UserModel
+                            {
+                                FirstName = reader.GetString(0),
+                                LastName = reader.GetString(1),
+                                Email = reader.GetString(2),
+                                Mobile = reader.GetString(3),
+                                VillageId = reader.GetInt32(4),
+                                TalukaId = reader.GetInt32(5),
+                                DistId = reader.GetInt32(6),
+                                StateId = reader.GetInt32(7),
+                                CountryId = reader.GetInt32(8),
+                                Role = reader.GetString(9),
+
+                            };
+                            return user;
+                        }
+
+                    }
+                }
+            }
+
+            return null;
+        }
+        catch (System.Exception ex)
+        {
+
+            System.Console.WriteLine("Error: " + ex.Message);
+            return null;
         }
     }
 

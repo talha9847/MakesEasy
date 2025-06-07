@@ -11,8 +11,9 @@ public interface IPeopleInterface{
 
     Task<int> InsertStudent(StudentModel student);
 
+    Task<List<StudentModel>> GetStudents(int id,string role);
 
-    Task<Dictionary<string,object>> GetCount(string role,int villageId);
+    Task<Dictionary<string, object>> GetCount(string role,int villageId);
     
 
 }

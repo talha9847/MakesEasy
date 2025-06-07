@@ -3,8 +3,9 @@
 import { Users, UserPlus, Edit, Trash2 } from "lucide-react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
 
 export const Student = () => {
   const [showModal, setShowModal] = useState(false);
@@ -15,6 +16,21 @@ export const Student = () => {
     reset,
     formState: { errors },
   } = useForm();
+
+  const getStudents = async () => {
+    console.log("ljklk");
+    const result = await axios.get(
+      "http://localhost:5169/api/People/GetStudents",
+      { withCredentials: true }
+    );
+    if (result.status == 200) {
+      console.log(result.data);
+    }
+  };
+
+  useEffect(() => {
+    getStudents();
+  }, []);
 
   return (
     <div>
@@ -35,13 +51,13 @@ export const Student = () => {
             onClick={() => {
               setShowModal(true);
               reset({
-                name:"",
-                mobile:"",
-                waqt:"",
-                age:"",
-                field:"",
-                year:""
-              })
+                name: "",
+                mobile: "",
+                waqt: "",
+                age: "",
+                field: "",
+                year: "",
+              });
             }}
             className="flex items-center justify-center border-2 border-black py-2 px-4 rounded-lg hover:bg-black hover:text-white transition-all duration-200"
           >

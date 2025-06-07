@@ -26,6 +26,9 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 
+    options.MapInboundClaims = false; // <--- Add this line here
+
+
 
     options.Events = new JwtBearerEvents
     {
@@ -109,15 +112,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("AllowFrontend");
+app.UseSession();
 app.UseHttpsRedirection();
-
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseCors("AllowFrontend");
 
-app.UseSession();
 
 app.MapControllers();
 
@@ -127,3 +130,24 @@ record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+//  var token = _jwtService.GenerateJwtToken(user);
+
+//                 HttpContext.Response.Cookies.Append("AuthToken", token, new CookieOptions
+//                 {
+//                     HttpOnly = true,
+//                     Secure = true,
+//                     SameSite = SameSiteMode.Strict,
+//                     Expires = DateTime.UtcNow.AddDays(30)
+//                 }); 

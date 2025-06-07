@@ -11,6 +11,7 @@ import { Dashboard } from "./AdminComponents/Dashboard";
 import User from "./AdminComponents/User";
 import { Memb } from "./AdminComponents/Memb";
 import Student from "./AdminComponents/Student";
+import Try from "./components/Try";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
@@ -35,6 +36,7 @@ const App = () => {
             <Route path="/admin/users" element={<User />} />
             <Route path="/admin/members" element={<Memb />} />
             <Route path="admin/students" element={<Student />} />
+            <Route path="admin/Try" element={<Try />} />
             {/* Add other routes as needed */}
           </Routes>
         </div>

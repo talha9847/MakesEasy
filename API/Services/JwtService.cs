@@ -21,13 +21,41 @@ namespace MakesEasy.Services
         public string GenerateJwtToken(UserModel user)
         {
             var role = user.Role.StartsWith("Admin") ? "Admin" : "User";
-            var claims = new[]
+            var claims = new List<Claim>
             {
-    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-    new Claim(ClaimTypes.Name, user.FirstName),
-    new Claim(ClaimTypes.Role, role)
-};
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.FirstName),
+                new Claim(ClaimTypes.Role, role),
+                new Claim("villageId", user.VillageId.ToString()),
+                new Claim("talukaId", user.TalukaId.ToString()),
+                new Claim("distId", user.DistId.ToString()),
+                new Claim("stateId", user.StateId.ToString()),
+                new Claim("countryId", user.CountryId.ToString()),
+            };
+            System.Console.WriteLine(user.VillageId);
+            if (user.Role == "Admin1")
+            {
 
+                claims.Add(new Claim("type", "village_id"));
+                claims.Add(new Claim("id", user.VillageId.ToString()));
+            }
+            else if (user.Role == "Admin2")
+            {
+                claims.Add(new Claim("type", "taluka_id"));
+                claims.Add(new Claim("id", user.TalukaId.ToString()));
+
+            }
+            else if (user.Role == "Admin3")
+            {
+                claims.Add(new Claim("type", "dist_id"));
+                claims.Add(new Claim("id", user.DistId.ToString()));
+
+            }
+
+            foreach (var claim in claims)
+            {
+                Console.WriteLine($"CLAIM: {claim.Type} - {claim.Value}");
+            }
 
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -43,5 +71,29 @@ namespace MakesEasy.Services
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+
+
+        public string GenerateTempToken(int userId)
+        {
+            var claims = new[]
+                {
+                    new Claim("userId", userId.ToString()),
+                    new Claim("type", "temporary") // used to distinguish this token type later
+                };
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(5),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
     }
+
 }

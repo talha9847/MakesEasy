@@ -173,6 +173,19 @@ public class PeopleRepo : IPeopleInterface
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
+
+                string columnName = role switch
+                {
+                    "village_id" => "village_id",
+                    "dist_id" => "dist_id",
+                    "taluka_id" => "taluka_id",
+                    _ => null
+                };
+                if (string.IsNullOrEmpty(columnName))
+                {
+                    return null;
+                }
+
                 var query = $@"SELECT
                             COUNT(id) AS Members,
                             COUNT(CASE WHEN occupation = 1 THEN 1 END) AS Students,
@@ -252,6 +265,55 @@ public class PeopleRepo : IPeopleInterface
         }
     }
 
+
+    public async Task<List<StudentModel>> GetStudents(int id, string role)
+    {
+        try
+        {
+            var students = new List<StudentModel>();
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+                System.Console.WriteLine(role);
+
+                var allowedColumns = new HashSet<string> { "village_id", "taluka_id", "dist_id" };
+                if (!allowedColumns.Contains(role))
+                {
+                    throw new ArgumentException("Invalid");
+                }
+                var query = $"SELECT id,name,mobile,age,waqt,field,year FROM students WHERE {role} = @id";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", id);
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var student = new StudentModel
+                            {
+                                Id = reader.GetInt32(0),
+                                Name = reader.GetString(1),
+                                Mobile = reader.GetString(2),
+                                Age = reader.GetInt32(3),
+                                Waqt = reader.GetString(4),
+                                Field = reader.GetString(5),
+                                Year = reader.GetString(6)
+                            };
+                            students.Add(student);
+
+                        }
+                    }
+                }
+            }
+            return students;
+        }
+        catch (System.Exception ex)
+        {
+
+            System.Console.WriteLine("Error this : " + ex.Message);
+            return null;
+        }
+    }
 
 
 
