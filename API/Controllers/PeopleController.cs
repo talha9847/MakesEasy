@@ -22,16 +22,16 @@ namespace MyApp.Namespace
         }
 
         [HttpPost]
-        [Route("InsertPeoplebd")]
+        [Route("InsertPeople")]
         public async Task<IActionResult> InsertPeople([FromBody] PeopleModel people)
         {
             try
             {
-                int vId = Convert.ToInt32(HttpContext.Session.GetInt32("villageId"));
-                int tId = Convert.ToInt32(HttpContext.Session.GetInt32("talukaId"));
-                int dId = Convert.ToInt32(HttpContext.Session.GetInt32("distId"));
-                int sId = Convert.ToInt32(HttpContext.Session.GetInt32("stateId"));
-                int cId = Convert.ToInt32(HttpContext.Session.GetInt32("countryId"));
+                int vId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "villageId")?.Value);
+                int tId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "talukaId")?.Value);
+                int dId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "distId")?.Value);
+                int sId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "stateId")?.Value);
+                int cId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "countryId")?.Value);
                 var peopels = await _peopleRepo.InsertPeople(people, vId, tId, dId, sId, cId);
 
                 if (peopels == 1)
@@ -57,8 +57,9 @@ namespace MyApp.Namespace
         {
             try
             {
-                int villageId = Convert.ToInt32(HttpContext.Session.GetInt32("id"));
-                string role = HttpContext.Session.GetString("role");
+                string role = User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+                string claimId = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+                int villageId = Convert.ToInt32(claimId);
 
                 var people = await _peopleRepo.GetPeopleByVillage(role, villageId);
                 if (people != null)
@@ -132,9 +133,9 @@ namespace MyApp.Namespace
         {
             try
             {
-                string role = HttpContext.Session.GetString("role");
-                System.Console.WriteLine(HttpContext.Session.GetString("role"));
-                int villageId = Convert.ToInt32(HttpContext.Session.GetInt32("id"));
+                string role = User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+                string claimId = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+                int villageId = Convert.ToInt32(claimId);
                 var count = await _peopleRepo.GetCount(role, villageId);
                 if (count != null)
                 {
@@ -200,10 +201,24 @@ namespace MyApp.Namespace
         {
 
             var role = User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-            var id = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            System.Console.WriteLine(id + " " + role);
-            // var student = await _peopleRepo.GetStudents(id, role);
-            return Ok(new { message = "Gettingn Students successfull" });
+            var claimId = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            int id = Convert.ToInt32(claimId);
+            var student = await _peopleRepo.GetStudents(id, role);
+            return Ok(new { message = "Getting Students successfull", Students = student });
+        }
+
+        [HttpPut("UpdateStudent")]
+        public async Task<IActionResult> UpdateStudent(StudentModel student)
+        {
+            var update = await _peopleRepo.UpdateStudent(student);
+            if (update == 1)
+            {
+                return Ok(new { message = "Student Updated Successfully", success = true });
+            }
+            else
+            {
+                return BadRequest(new { message = "Error in Updating student detail" });
+            }
         }
     }
 }

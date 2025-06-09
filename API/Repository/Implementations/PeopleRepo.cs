@@ -274,7 +274,6 @@ public class PeopleRepo : IPeopleInterface
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
-                System.Console.WriteLine(role);
 
                 var allowedColumns = new HashSet<string> { "village_id", "taluka_id", "dist_id" };
                 if (!allowedColumns.Contains(role))
@@ -315,7 +314,45 @@ public class PeopleRepo : IPeopleInterface
         }
     }
 
+    public async Task<int> UpdateStudent(StudentModel student)
+    {
+        try
+        {
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+                var query = "UPDATE students SET name=@name, mobile=@mobile, age=@age, waqt=@waqt, field=@field, year=@year WHERE id=@id";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", student.Id);
+                    cmd.Parameters.AddWithValue("@name", student.Name);
+                    cmd.Parameters.AddWithValue("@mobile", student.Mobile);
+                    cmd.Parameters.AddWithValue("@age", student.Age);
+                    cmd.Parameters.AddWithValue("@waqt", student.Waqt);
+                    cmd.Parameters.AddWithValue("@field", student.Field);
+                    cmd.Parameters.AddWithValue("@year", student.Year   );
 
+                    int row = cmd.ExecuteNonQuery();
+
+                    if (row == 1)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+
+                }
+            }
+        }
+        catch (System.Exception ex)
+        {
+
+            System.Console.WriteLine(ex.Message);
+            return -1;
+        }
+    }
 
 
 

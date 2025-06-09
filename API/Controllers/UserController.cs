@@ -72,7 +72,7 @@ namespace MyApp.Namespace
 
                     var token = _jwtService.GenerateTempToken(user.Id);
 
-                    return Ok(new { message = "Login sucessfull", Token = token, Role = user.Role.ToString() });
+                    return Ok(new { message = "Login sucessfull", success = true, Token = token, Role = user.Role.ToString() });
                 }
                 else
                 {
@@ -200,12 +200,12 @@ namespace MyApp.Namespace
             try
             {
 
-                foreach (var claim in User.Claims)
-                {
-                    Console.WriteLine($"{claim.Type}: {claim.Value}");
-                }
-
                 var villageClaim = User.Claims.FirstOrDefault(c => c.Type == "id");
+                var typeClaim = User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+                if (typeClaim != "village_id")
+                {
+                    return Ok(new { message = "This is not a bad news", Pending =new object []{ }, Approved =new object[]{}, Rejected = new object[]{} });
+                }
 
                 if (villageClaim == null || string.IsNullOrEmpty(villageClaim.Value))
                 {
@@ -241,9 +241,10 @@ namespace MyApp.Namespace
         {
             try
             {
-
+                System.Console.WriteLine(id + "  " + status);
                 string type = User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
                 string claimTypeId = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+                System.Console.WriteLine(type);
 
                 if (type == "village_id")
                 {

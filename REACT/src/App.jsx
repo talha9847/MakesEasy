@@ -12,7 +12,6 @@ import User from "./AdminComponents/User";
 import { Memb } from "./AdminComponents/Memb";
 import Student from "./AdminComponents/Student";
 import Try from "./components/Try";
-import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   return (
@@ -21,14 +20,7 @@ const App = () => {
         <div className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route
-              path="/admin/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            ></Route>
+            <Route path="/admin/dashboard" element={<Dashboard />}></Route>
             <Route path="/signup" element={<Sign />} />
             <Route path="/aboutus" element={<Aboutus />} />
             <Route path="/contactus" element={<ContactUs />} />

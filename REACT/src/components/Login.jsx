@@ -23,68 +23,96 @@ const Login = () => {
     var form = new FormData();
     form.append("identifier", data.identifier);
     form.append("password", data.password);
-    console.log("Submitting data:", data);
-
+    localStorage.clear();
     try {
-      const response = await fetch("http://localhost:5169/api/User/Login", {
-        method: "POST",
-        body: form,
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        var result = await response.json();
-        if (result.role == "Admin") {
-          // window.location.href = "admin/dashboard";
-          console.log(result);
+      const result = await axios.post(
+        "http://localhost:5169/api/User/Login",
+        form,
+        {
+          withCredentials: true,
         }
-        if (result.role == "Admin2") {
-          setIdMap({
-            village_id: result.userDetail.villageId,
-            taluka_id: result.userDetail.talukaId,
-          });
-          const roles = [];
-          roles.push("village_id", "taluka_id");
-          setAvailableRoles(roles);
+      );
+      if (result.status == 200) {
+        localStorage.setItem("token", result.data.token);
+        if (result.data.role == "Admin1") {
+          let form = new FormData();
+          form.append("tempToken", localStorage.getItem("token"));
+          form.append("role", "Admin1");
+          const result = await axios.post(
+            "http://localhost:5169/api/User/SetScope",
+            form,
+            {
+              withCredentials: true,
+            }
+          );
+          if (result.status == 200) {
+            window.location.href = "admin/dashboard";
+          }
+        } else if (result.data.role == "Admin2") {
+          setAvailableRoles(["Village Admin", "Taluka Admin"]);
           setTalukaModal(true);
-
-          // window.location.href = "admin/dashboard";
-        }
-        if (result.role == "Admin3") {
-          setIdMap({
-            village_id: result.userDetail.villageId,
-            taluka_id: result.userDetail.talukaId,
-            dist_id: result.userDetail.distId,
-          });
-          const roles = [];
-          roles.push("village_id", "taluka_id", "dist_id");
-          setAvailableRoles(roles);
+        } else if (result.data.role == "Admin3") {
+          setAvailableRoles([
+            "Village Admin",
+            "Taluka Admin",
+            "District Admin",
+          ]);
           setTalukaModal(true);
-        }
-        if (result.role == "Admin4") {
-          console.log(result.userDetail.stateId);
-          setIdMap({
-            village_id: result.userDetail.villageId,
-            taluka_id: result.userDetail.talukaId,
-            dist_id: result.userDetail.distId,
-            state_id: result.userDetail.stateId,
-          });
-          const roles = [];
-          roles.push("village_id", "taluka_id", "dist_id", "state_id");
-          setAvailableRoles(roles);
-          setTalukaModal(true);
-          toast.success("Login Successfull");
-        }
-        if (result.role == "User") {
-
-          console.log(result.userDetail.villageId+" lkjfdlk ")
-          toast.success("Welcome to Makes Easy!")
         }
       } else {
-        toast.error("Invalid Username or Password");
+        return;
       }
     } catch (error) {
       console.error("error here ", error);
+    }
+  };
+
+  const roleFunction = async (role) => {
+    try {
+      let form = new FormData();
+      form.append("tempToken", localStorage.getItem("token"));
+      if (role == "Village Admin") {
+        form.append("role", "Admin1");
+        const result = await axios.post(
+          "http://localhost:5169/api/User/SetScope",
+          form,
+          {
+            withCredentials: true,
+          }
+        );
+
+        if(result.status==200){
+          window.location.href="admin/dashboard"
+        }
+      }
+      if (role == "Taluka Admin") {
+        form.append("role", "Admin2");
+        const result = await axios.post(
+          "http://localhost:5169/api/User/SetScope",
+          form,
+          {
+            withCredentials: true,
+          }
+        );
+        if (result.status == 200) {
+          window.location.href = "admin/dashboard";
+        }
+      } else if (role == "District Admin") {
+        form.append("role", "Admin3");
+        const result = await axios.post(
+          "http://localhost:5169/api/User/SetScope",
+          form,
+          {
+            withCredentials: true,
+          }
+        );
+
+        if (result.status == 200) {
+          window.location.href = "admin/dashboard";
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -256,33 +284,19 @@ const Login = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
             <h2 className="text-xl font-semibold mb-4 text-gray-800">
-              Select Admin Role
+              Login As
             </h2>
 
-            <div className="space-y-3">
-              {availableRoles.map((roleKey) => (
+            <div className="flex items-center justify-center flex-col gap-3">
+              {availableRoles.map((c, index) => (
                 <button
-                  key={roleKey}
-                  onClick={async () => {
-                    const selectedId = idMap[roleKey];
-                    console.log(idMap[roleKey]);
-                    try {
-                      await axios.post(
-                        `http://localhost:5169/api/Role/SetRoles/${selectedId}/${roleKey}`,
-                        {},
-                        { withCredentials: true }
-                      );
-
-                      setTalukaModal(false);
-                      window.location.href = "admin/dashboard";
-                      // Optionally redirect or show success toast
-                    } catch (err) {
-                      console.error("Failed to set role:", err);
-                    }
+                  key={index}
+                  onClick={() => {
+                    roleFunction(c);
                   }}
-                  className="w-full bg-black text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200"
+                  className="bg-black text-white px-3 rounded-md"
                 >
-                  {roleKey.replace("_id", "").toUpperCase()} Admin
+                  {c}
                 </button>
               ))}
             </div>

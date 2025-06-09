@@ -233,7 +233,7 @@ public class UserRepo : IUserInterface
             {
                 await conn.OpenAsync();
 
-                var allowedColumns = new HashSet<string> { "village_id", "taluka_id", "dist_id" };
+                var allowedColumns = new HashSet<string> { "village", "taluka", "dist" };
                 if (!allowedColumns.Contains(type))
                 {
                     return -1;

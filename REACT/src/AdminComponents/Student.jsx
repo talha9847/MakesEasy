@@ -10,6 +10,8 @@ import axios from "axios";
 export const Student = () => {
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(false);
+  const[editId,setEditId]=useState(0);
+  const [students, setStudents] = useState([]);
   const {
     register,
     handleSubmit,
@@ -25,7 +27,32 @@ export const Student = () => {
     );
     if (result.status == 200) {
       console.log(result.data);
+      setStudents(result.data.students);
     }
+  };
+
+  const onSubmit = async (data) => {
+    let id=editId;
+    let updatedData={...data,id:id}
+    if(editing){
+      const result=await axios.put("http://localhost:5169/api/People/UpdateStudent",updatedData);
+      if(result.status==200){
+        await getStudents();
+        setShowModal(false)
+      }
+    }
+  };
+
+  const editFunction = (c) => {
+    setShowModal(true);
+    reset({
+      name: c.name,
+      mobile: c.mobile,
+      age: c.age,
+      waqt: c.waqt,
+      field: c.field,
+      year: c.year,
+    });
   };
 
   useEffect(() => {
@@ -115,6 +142,38 @@ export const Student = () => {
                       </div>
                     </td>
                   </tr>
+
+                  {students.map((c) => (
+                    <tr
+                      key={c.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap">{c.name}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {c.mobile}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">{c.waqt}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{c.field}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{c.year}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => {
+                              setEditing(true);
+                              editFunction(c);
+                              setEditId(c.id)
+                            }}
+                            className="p-1 rounded-full hover:bg-gray-200 transition-colors"
+                          >
+                            <Edit size={18} className="text-blue-700" />
+                          </button>
+                          <button className="p-1 rounded-full hover:bg-gray-200 transition-colors">
+                            <Trash2 size={18} className="text-red-700" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -125,11 +184,11 @@ export const Student = () => {
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <form
-              onSubmit={handleSubmit()}
+              onSubmit={handleSubmit(onSubmit)}
               className="bg-white p-6 rounded-lg shadow-lg w-96 space-y-4"
             >
               <h2 className="text-xl font-semibold text-center mb-4">
-                Add Member
+                {editing ? "Update Student" : "Add Student"}
               </h2>
 
               <input
@@ -335,7 +394,18 @@ export const Student = () => {
               <div className="flex justify-end space-x-2 pt-4">
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
+                  onClick={() => {
+                    setEditing(false)
+                    reset({
+                      name:"",
+                      mobile:"",
+                      age:"",
+                      waqt:"",
+                      field:"",
+                      year:""
+                    })
+                    setShowModal(false);
+                  }}
                   className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
                 >
                   Close
@@ -344,7 +414,7 @@ export const Student = () => {
                   type="submit"
                   className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
                 >
-                  Submit
+                  {editing ? "Update" : "Add"}
                 </button>
               </div>
             </form>

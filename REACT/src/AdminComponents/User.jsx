@@ -29,7 +29,8 @@ const UserManagement = () => {
   const fetchData = async () => {
     try {
       var response = await axios.get(
-        "http://localhost:5169/api/User/GetUsers",{withCredentials:true}
+        "http://localhost:5169/api/User/GetUsers",
+        { withCredentials: true }
       );
       var data = response.data;
       setLength({
@@ -56,7 +57,8 @@ const UserManagement = () => {
 
     try {
       const response = await axios.patch(
-        `http://localhost:5169/api/User/UpdateStatus/${userId}/${status}`,{withCredentials:true}
+        `http://localhost:5169/api/User/UpdateStatus/${userId}/${status}`,{},
+        { withCredentials: true }
       );
       console.log("Server response:", response.data);
     } catch (error) {}
@@ -269,7 +271,8 @@ const UserManagement = () => {
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div
                                   className={
-                                    user.status == "Approved"|| user.status=="Rejected"
+                                    user.status == "Approved" ||
+                                    user.status == "Rejected"
                                       ? "cursor-pointer"
                                       : ""
                                   }
