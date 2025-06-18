@@ -373,18 +373,14 @@ const HelpAndSupport = () => {
 
             {/* Team Member 3 */}
             <div className="group text-center">
-              <div className="relative mx-auto">
+              <div className="mx-auto">
                 {/* Decorative circle */}
-                <div className="absolute inset-0 rounded-full bg-black opacity-5 transform scale-110 group-hover:scale-125 transition-transform duration-300"></div>
-
                 {/* Border circle that animates on hover */}
-                <div className="absolute inset-0 rounded-full border-2 border-black opacity-20 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"></div>
 
                 {/* Main image container */}
-                <div className="relative w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-white shadow-xl">
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-0 group-hover:opacity-50 transition-opacity duration-300 z-10"></div>
+                <div className="w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-white shadow-xl">
                   <img
-                    className="w-full h-full object-cover object-center transform transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-full object-cover object-center"
                     src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
                     alt="Michael Johnson"
                   />
@@ -514,7 +510,6 @@ const HelpAndSupport = () => {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 };

@@ -6,11 +6,12 @@ import Sidebar from "./Sidebar";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 export const Student = () => {
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(false);
-  const[editId,setEditId]=useState(0);
+  const [editId, setEditId] = useState(0);
   const [students, setStudents] = useState([]);
   const {
     register,
@@ -32,13 +33,26 @@ export const Student = () => {
   };
 
   const onSubmit = async (data) => {
-    let id=editId;
-    let updatedData={...data,id:id}
-    if(editing){
-      const result=await axios.put("http://localhost:5169/api/People/UpdateStudent",updatedData);
-      if(result.status==200){
+    if (editing) {
+      let id = editId;
+      let updatedData = { ...data, id: id };
+      const result = await axios.put(
+        "http://localhost:5169/api/People/UpdateStudent",
+        updatedData
+      );
+      if (result.status == 200) {
         await getStudents();
-        setShowModal(false)
+        setShowModal(false);
+      }
+    } else {
+      const result = await axios.post(
+        "http://localhost:5169/api/People/InsertStudent",
+        data,
+        { withCredentials: true }
+      );
+      if (result.status == 200) {
+        await getStudents();
+        setShowModal(false);
       }
     }
   };
@@ -53,6 +67,43 @@ export const Student = () => {
       field: c.field,
       year: c.year,
     });
+  };
+
+  const deleteFunction = async (id) => {
+    const result = await Swal.fire({
+      title: "Are sure you want to delete student?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      background: "#111827",
+      color: "#f9fafb",
+      iconColor: "#f59e0b",
+      showCancelButton: true,
+      confirmButtonColor: "#f9fafb",
+      cancelButtonColor: "#374151",
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "border border-gray-700 shadow-lg",
+        title: "text-lg font-semibold tracking-wide",
+        htmlContainer: "text-gray-300",
+        confirmButton:
+          "bg-white text-gray-900 px-4 py-2 font-medium uppercase tracking-wide",
+        cancelButton:
+          "bg-gray-700 text-gray-100 px-4 py-2 font-medium uppercase tracking-wide",
+        actions: "gap-3",
+      },
+    });
+
+    if (result.isConfirmed) {
+      const del = await axios.delete(
+        `http://localhost:5169/api/People/DeleteStudent/${id}`,
+        { withCredentials: true }
+      );
+
+      if(del.status==200){
+        alert("Deleted Successfully")
+      }
+    }
   };
 
   useEffect(() => {
@@ -72,7 +123,7 @@ export const Student = () => {
         <div className="top flex justify-between px-4 py-3 items-center">
           <h1 className="p-3 text-2xl flex items-center gap-3 font-bold">
             <Users className="hover:scale-125 hover:cursor-pointer" />
-            Members
+            Students
           </h1>
           <button
             onClick={() => {
@@ -89,14 +140,14 @@ export const Student = () => {
             className="flex items-center justify-center border-2 border-black py-2 px-4 rounded-lg hover:bg-black hover:text-white transition-all duration-200"
           >
             <UserPlus className="mr-2 h-5 w-5" />
-            <span>Add member</span>
+            <span>Add Student</span>
           </button>
         </div>
 
         <div className="table mt-10 px-4 w-full">
           <div className="head flex flex-col rounded-lg overflow-hidden shadow-lg border border-gray-200 h-[500px]">
             <h1 className="pl-6 text-xl font-sans font-semibold py-4 bg-black text-white rounded-t-lg">
-              Member List
+              Student List
             </h1>
             <div className="overflow-y-auto">
               <table className="min-w-full">
@@ -161,13 +212,18 @@ export const Student = () => {
                             onClick={() => {
                               setEditing(true);
                               editFunction(c);
-                              setEditId(c.id)
+                              setEditId(c.id);
                             }}
                             className="p-1 rounded-full hover:bg-gray-200 transition-colors"
                           >
                             <Edit size={18} className="text-blue-700" />
                           </button>
-                          <button className="p-1 rounded-full hover:bg-gray-200 transition-colors">
+                          <button
+                            onClick={() => {
+                              deleteFunction(c.id);
+                            }}
+                            className="p-1 rounded-full hover:bg-gray-200 transition-colors"
+                          >
                             <Trash2 size={18} className="text-red-700" />
                           </button>
                         </div>
@@ -395,15 +451,15 @@ export const Student = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    setEditing(false)
+                    setEditing(false);
                     reset({
-                      name:"",
-                      mobile:"",
-                      age:"",
-                      waqt:"",
-                      field:"",
-                      year:""
-                    })
+                      name: "",
+                      mobile: "",
+                      age: "",
+                      waqt: "",
+                      field: "",
+                      year: "",
+                    });
                     setShowModal(false);
                   }}
                   className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"

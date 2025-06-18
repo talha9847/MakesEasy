@@ -52,12 +52,6 @@ namespace MakesEasy.Services
 
             }
 
-            foreach (var claim in claims)
-            {
-                Console.WriteLine($"CLAIM: {claim.Type} - {claim.Value}");
-            }
-
-
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 

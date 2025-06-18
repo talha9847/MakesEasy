@@ -162,7 +162,6 @@ namespace MyApp.Namespace
                 {
                     user.Role = role;
                 }
-                System.Console.WriteLine(user.Role + "  this is what you got");
 
                 var authToken = _jwtService.GenerateJwtToken(user);
 
@@ -241,10 +240,8 @@ namespace MyApp.Namespace
         {
             try
             {
-                System.Console.WriteLine(id + "  " + status);
                 string type = User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
                 string claimTypeId = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-                System.Console.WriteLine(type);
 
                 if (type == "village_id")
                 {
@@ -260,7 +257,6 @@ namespace MyApp.Namespace
                 {
                     type = "dist";
                 }
-                System.Console.WriteLine(type);
                 int typeId = int.Parse(claimTypeId);
                 var stat = await _userRepo.UpdateStatus(id, status, type, typeId);
                 if (stat == 1)

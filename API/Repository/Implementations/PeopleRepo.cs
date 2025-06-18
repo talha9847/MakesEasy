@@ -330,7 +330,7 @@ public class PeopleRepo : IPeopleInterface
                     cmd.Parameters.AddWithValue("@age", student.Age);
                     cmd.Parameters.AddWithValue("@waqt", student.Waqt);
                     cmd.Parameters.AddWithValue("@field", student.Field);
-                    cmd.Parameters.AddWithValue("@year", student.Year   );
+                    cmd.Parameters.AddWithValue("@year", student.Year);
 
                     int row = cmd.ExecuteNonQuery();
 
@@ -350,6 +350,38 @@ public class PeopleRepo : IPeopleInterface
         {
 
             System.Console.WriteLine(ex.Message);
+            return -1;
+        }
+    }
+
+    public async Task<int> DeleteStudent(int id)
+    {
+        try
+        {
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+                var query = "DELETE FROM students WHERE id=@id";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id",id);
+                    int row = cmd.ExecuteNonQuery();
+                    if (row == 1)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+            }
+
+        }
+        catch (System.Exception ex)
+        {
+
+            System.Console.WriteLine("Error: " + ex.Message);
             return -1;
         }
     }

@@ -19,5 +19,7 @@ public interface IPeopleInterface
 
     Task<Dictionary<string, object>> GetCount(string role, int villageId);
 
+    Task<int> DeleteStudent(int id);
+
 
 }

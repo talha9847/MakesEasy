@@ -155,7 +155,7 @@ namespace MyApp.Namespace
         }
 
         [HttpPost("InsertStudent")]
-        public async Task<IActionResult> InsertStudent([FromForm] StudentModel student)
+        public async Task<IActionResult> InsertStudent(StudentModel student)
         {
             try
             {
@@ -182,7 +182,7 @@ namespace MyApp.Namespace
 
                 if (result == 1)
                 {
-                    return Ok(new { message = "Student Inserted Successfully", success = true });
+                    return Ok(new { message = "Student Inserted Successfully", success = true, student.Name, student.Age });
                 }
                 else
                 {
@@ -218,6 +218,22 @@ namespace MyApp.Namespace
             else
             {
                 return BadRequest(new { message = "Error in Updating student detail" });
+            }
+        }
+
+
+        [HttpDelete]
+        [Route("DeleteStudent/{id}")]
+        public async Task<IActionResult> DeleteStudent(int id)
+        {
+            var delete = await _peopleRepo.DeleteStudent(id);
+            if (delete == 1)
+            {
+                return Ok(new { message = "Deleted Successfully" });
+            }
+            else
+            {
+                return BadRequest(new { message = "Error in Deleting" });
             }
         }
     }

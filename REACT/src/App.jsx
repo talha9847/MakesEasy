@@ -12,7 +12,7 @@ import User from "./AdminComponents/User";
 import { Memb } from "./AdminComponents/Memb";
 import Student from "./AdminComponents/Student";
 import Try from "./components/Try";
-
+import { Members } from "./AdminComponents/Members";
 const App = () => {
   return (
     <Router>
@@ -28,6 +28,7 @@ const App = () => {
             <Route path="/admin/users" element={<User />} />
             <Route path="/admin/members" element={<Memb />} />
             <Route path="admin/students" element={<Student />} />
+            <Route path="admin/talha" element={<Members/>}/>
             <Route path="admin/Try" element={<Try />} />
             {/* Add other routes as needed */}
           </Routes>
