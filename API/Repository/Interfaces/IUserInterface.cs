@@ -11,8 +11,12 @@ public interface IUserInterface
     Task<List<Dictionary<string, object>>> ApprovedUsers(int villageId);
     Task<List<Dictionary<string, object>>> RejectedUsers(int villageId);
 
-    Task<int> UpdateStatus(int id, string status,string type,int typeId);
+    Task<int> UpdateStatus(int id, string status, string type, int typeId);
 
 
     Task<UserModel> GetOne(int id);
+
+    Task<int> GetUserByEmail(string email);
+
+    Task<int> TokenData(int id, string token, DateTime expiry);
 }

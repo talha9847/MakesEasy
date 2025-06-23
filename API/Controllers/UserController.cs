@@ -17,15 +17,17 @@ namespace MyApp.Namespace
     {
         private readonly IUserInterface _userRepo;
         private readonly JwtService _jwtService;
+        private readonly EmailService _emailService;
 
         private readonly ILocationInterface _locationRepo;
         private readonly IConfiguration _config;
-        public UserController(IUserInterface userRepo, ILocationInterface locationRepo, JwtService jwtService, IConfiguration config)
+        public UserController(IUserInterface userRepo, ILocationInterface locationRepo, JwtService jwtService, IConfiguration config, EmailService emailService)
         {
             _userRepo = userRepo;
             _locationRepo = locationRepo;
             _jwtService = jwtService;
             _config = config;
+            _emailService = emailService;
         }
 
 
@@ -36,11 +38,20 @@ namespace MyApp.Namespace
         {
             try
             {
+                if (user.Password != user.ConfirmPassword)
+                {
+                    return Conflict(new { message = "Some thing is wrong buddy" });
+                }
                 user.Role = "User";
                 var entry = await _userRepo.UserRegister(user);
+                // var entry = 1;
                 if (entry == 1)
                 {
                     return Ok(new { message = "User REgister successfull" });
+                }
+                if (entry == 2)
+                {
+                    return StatusCode(356, new { message = "Email Or Mobile Number Already Exist" });
                 }
                 else
                 {
@@ -203,7 +214,7 @@ namespace MyApp.Namespace
                 var typeClaim = User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
                 if (typeClaim != "village_id")
                 {
-                    return Ok(new { message = "This is not a bad news", Pending =new object []{ }, Approved =new object[]{}, Rejected = new object[]{} });
+                    return Ok(new { message = "This is not a bad news", Pending = new object[] { }, Approved = new object[] { }, Rejected = new object[] { } });
                 }
 
                 if (villageClaim == null || string.IsNullOrEmpty(villageClaim.Value))
@@ -277,6 +288,40 @@ namespace MyApp.Namespace
                 System.Console.WriteLine("Error: " + ex.Message);
                 return BadRequest(new { success = false, message = "Error: " + ex.Message });
             }
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> SendEmail(string email)
+        {
+            int Id = await _userRepo.GetUserByEmail(email);
+            if (Id == 0)
+            {
+                return Ok(new { message = "If Email is Ok then email has been sent" });
+            }
+            var token = Guid.NewGuid().ToString();
+            var expiry = DateTime.UtcNow.AddMinutes(30);
+
+            var setData = await _userRepo.TokenData(Id, token, expiry);
+            if (setData != 1)
+            {
+                return StatusCode(500, new { message = "Error while generating token." });
+
+            }
+                var resetLink = $"http://localhost:5173/reset-password?token={token}";
+
+
+            await _emailService.SendEmail(email, "Reset Your Password", resetLink);
+
+            return Ok(new { message = "If this email exists, a reset link has been sent." });
+
+        }
+
+
+        [HttpPost("UpdatePassword")]
+        public IActionResult UpdatePassword()
+        {
+            var expiry = DateTime.UtcNow.AddMinutes(30);
+            return Ok(new { message = "Lkkjlkj ", expiry });
         }
 
     }

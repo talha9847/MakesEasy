@@ -13,6 +13,9 @@ import { Memb } from "./AdminComponents/Memb";
 import Student from "./AdminComponents/Student";
 import Try from "./components/Try";
 import { Members } from "./AdminComponents/Members";
+import ForgotPassword from "./components/ForgotPassword";
+import UpdatePassword from "./components/UpdatePassword";
+import SignOne from "./components/Sign2";
 const App = () => {
   return (
     <Router>
@@ -30,6 +33,9 @@ const App = () => {
             <Route path="admin/students" element={<Student />} />
             <Route path="admin/talha" element={<Members/>}/>
             <Route path="admin/Try" element={<Try />} />
+            <Route path="/forgotpassword" element={<ForgotPassword />} />
+            <Route path="/updatepassword" element={<UpdatePassword />} />
+            <Route path="/signone" element={<SignOne />} />
             {/* Add other routes as needed */}
           </Routes>
         </div>

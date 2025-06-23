@@ -6,6 +6,7 @@ C:\VSCODE\MakesEasy\API\bin\Debug\net9.0\api.deps.json
 C:\VSCODE\MakesEasy\API\bin\Debug\net9.0\api.runtimeconfig.json
 C:\VSCODE\MakesEasy\API\bin\Debug\net9.0\api.dll
 C:\VSCODE\MakesEasy\API\bin\Debug\net9.0\api.pdb
+C:\VSCODE\MakesEasy\API\bin\Debug\net9.0\BCrypt.Net-Next.dll
 C:\VSCODE\MakesEasy\API\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\VSCODE\MakesEasy\API\bin\Debug\net9.0\Microsoft.AspNetCore.OpenApi.dll
 C:\VSCODE\MakesEasy\API\bin\Debug\net9.0\Microsoft.IdentityModel.Abstractions.dll

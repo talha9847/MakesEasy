@@ -5,6 +5,7 @@ import { Eye, EyeOff } from "lucide-react"; // Import icons
 import { useAsyncError } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 const SignUp = () => {
   const [countries, setCountries] = useState([]);
@@ -26,6 +27,7 @@ const SignUp = () => {
     formState: { errors },
     watch,
     clearErrors,
+    reset,
   } = useForm();
 
   const onSubmit = async (data) => {
@@ -41,31 +43,45 @@ const SignUp = () => {
       return;
     }
 
-
     try {
-      const response = await fetch("http://localhost:5169/api/User/Register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const result = await axios.post(
+        "http://localhost:5169/api/User/Register",
+        data,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("lhlloo")
 
-      if (response.ok) {
-        const result = await response.json();
-        toast.success("Sign up successfully",{
-          autoClose:2000,
-          onClose:()=>{
-            window.location.href="/login"
-          }
-        })
-      } else {
-        const errorResponse = await response.json();
-        toast.error("Error in Signup")
-        console.error("Form submission failed:", errorResponse);
+      if (result.status === 200) {
+        toast.success("Registration successful! Redirecting to login...", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+
+        // ✅ Clear the form here after success
+        reset({
+          FirstName: "",
+          LastName: "",
+          Email: "",
+          Mobile: "",
+          password: "",
+        });
+
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 3000);
+      } else if (result.status == 356) {
+        toast.warning("Email or Mobile number already exists");
       }
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error("Registration failed:", error);
+      toast.error("Something went wrong. Please try again.");
     }
   };
 
@@ -145,7 +161,7 @@ const SignUp = () => {
               </label>
               <input
                 {...register("FirstName", {
-                  required: "first name is required",
+                  required: "First name is required",
                 })}
                 type="text"
                 className="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-md  focus:border-black text-sm"
@@ -162,7 +178,7 @@ const SignUp = () => {
                 Last Name
               </label>
               <input
-                {...register("LastName", { required: "last name is required" })}
+                {...register("LastName", { required: "Last name is required" })}
                 type="text"
                 className="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-md  focus:border-black text-sm"
                 placeholder="Doe"
@@ -206,7 +222,7 @@ const SignUp = () => {
                 className="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-md  focus:border-black text-sm"
                 placeholder="9106704675"
               />
-              <p className="text-red-500 text-xs">{errors.mobile?.message}</p>
+              <p className="text-red-500 text-xs">{errors.Mobile?.message}</p>
             </div>
 
             {/* Country */}

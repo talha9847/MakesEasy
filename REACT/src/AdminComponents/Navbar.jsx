@@ -77,7 +77,7 @@ const Navbar = () => {
   const navItems = [
     { to: "/admin/dashboard", img: home, text: "Dashboard" },
     { to: "/admin/users", img: about, text: "Users" },
-    { to: "/contactus", img: contact, text: "Contact" },
+    { to: "/admin/students", img: contact, text: "Students" },
     { to: "/", img: logout, text: "Logout" },
   ];
 

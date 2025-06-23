@@ -19,11 +19,28 @@ public class UserRepo : IUserInterface
     {
         try
         {
+            if (user.ConfirmPassword != user.Password)
+            {
+                return 0;
+            }
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
 
-                System.Console.WriteLine("connectionn   ");
+                var querry = "SELECT 1 FROM users WHERE email=@email OR mobile=@mobile";
+                using (var cmd = new NpgsqlCommand(querry, conn))
+                {
+                    cmd.Parameters.AddWithValue("@email", user.Email);
+                    cmd.Parameters.AddWithValue("@mobile", user.Mobile);
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return 2;
+                        }
+                    }
+                }
+
                 var query = "INSERT INTO USERS(fname,lname,email,mobile,password,country,state,dist,taluka,village,role)values(@fname,@lname,@email,@mobile,@pass,@country,@state,@dist,@taluka,@village,@role)";
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
@@ -31,7 +48,8 @@ public class UserRepo : IUserInterface
                     cmd.Parameters.AddWithValue("@lname", user.LastName);
                     cmd.Parameters.AddWithValue("@email", user.Email);
                     cmd.Parameters.AddWithValue("@mobile", user.Mobile);
-                    cmd.Parameters.AddWithValue("@pass", user.Password);
+                    var hashedPass = BCrypt.Net.BCrypt.HashPassword(user.Password);
+                    cmd.Parameters.AddWithValue("@pass", hashedPass);
                     cmd.Parameters.AddWithValue("@country", user.CountryId);
                     cmd.Parameters.AddWithValue("@state", user.StateId);
                     cmd.Parameters.AddWithValue("@dist", user.DistId);
@@ -39,7 +57,7 @@ public class UserRepo : IUserInterface
                     cmd.Parameters.AddWithValue("@village", user.VillageId);
                     cmd.Parameters.AddWithValue("@role", user.Role);
 
-                    int row = cmd.ExecuteNonQuery();
+                    int row = await cmd.ExecuteNonQueryAsync();
                     if (row == 1)
                     {
                         return 1;
@@ -67,24 +85,27 @@ public class UserRepo : IUserInterface
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
-                var query = "SELECT id,role FROM users WHERE (email=@identifier OR mobile=@identifier) AND password=@pass  AND status='Approved'";
+                var query = "SELECT id,role,password FROM users WHERE (email=@identifier OR mobile=@identifier)  AND status='Approved'";
 
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@identifier", identifier);
-                    cmd.Parameters.AddWithValue("@pass", password);
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
-                            var user = new UserModel
+                            var hashedPass = reader.GetString(2);
+                            bool verified = BCrypt.Net.BCrypt.Verify(password, hashedPass);
+                            if (!verified)
+                            {
+                                return null;
+                            }
+                            return new UserModel
                             {
                                 Id = reader.GetInt32(0),
-                                Role = reader.GetString(1)
+                                Role = reader.GetString(1),
+                                Password = null
                             };
-
-
-                            return user;
                         }
                     }
                 }
@@ -312,6 +333,75 @@ public class UserRepo : IUserInterface
 
             System.Console.WriteLine("Error: " + ex.Message);
             return null;
+        }
+    }
+
+    public async Task<int> GetUserByEmail(string email)
+    {
+        try
+        {
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+                var query = "SELECT id FROM users WHERE email=@email";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@email", email);
+
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        int Id = 0;
+
+                        if (await reader.ReadAsync())
+                        {
+                            Id = reader.GetInt32(0);
+
+                        }
+                        if (Id != 0)
+                        {
+                            return Id;
+                        }
+                    }
+                }
+            }
+            return 0;
+
+        }
+        catch (System.Exception ex)
+        {
+
+            System.Console.WriteLine("Error: " + ex.Message);
+            return 0;
+        }
+    }
+
+    public async Task<int> TokenData(int id, string token, DateTime expiry)
+    {
+        try
+        {
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                var query = "INSERT INTO TokenData(userid,token,expiration)VALUES(@id,@token,@expiration)";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.Parameters.AddWithValue("@token", token);
+                    cmd.Parameters.AddWithValue("@expiration", expiry);
+
+                    int row = await cmd.ExecuteNonQueryAsync();
+                    if (row == 1)
+                    {
+                        return 1;
+                    }
+                }
+            }
+            return 0;
+        }
+        catch (System.Exception ex)
+        {
+
+            System.Console.WriteLine("Error: " + ex.Message);
+            return -1;
         }
     }
 

@@ -99,6 +99,7 @@ builder.Services.AddScoped<IUserInterface, UserRepo>(provider => new UserRepo(co
 builder.Services.AddScoped<ILocationInterface, LocationRepo>(provider => new LocationRepo(conn));
 builder.Services.AddScoped<IPeopleInterface, PeopleRepo>(provider => new PeopleRepo(conn));
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<EmailService>();
 
 // Add controllers and endpoints
 builder.Services.AddControllers();
