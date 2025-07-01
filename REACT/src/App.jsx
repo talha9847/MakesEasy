@@ -16,7 +16,9 @@ import { Members } from "./AdminComponents/Members";
 import ForgotPassword from "./components/ForgotPassword";
 import UpdatePassword from "./components/UpdatePassword";
 import SignOne from "./components/Sign2";
-const App = () => {
+import FourMonth from "./AdminComponents/FourMonth";
+import FourtyDays from "./AdminComponents/FourtyDays";
+ const App = () => {
   return (
     <Router>
       <div className="flex flex-col min-h-screen bg-gray-100">
@@ -36,6 +38,8 @@ const App = () => {
             <Route path="/forgotpassword" element={<ForgotPassword />} />
             <Route path="/updatepassword" element={<UpdatePassword />} />
             <Route path="/signone" element={<SignOne />} />
+            <Route path="/admin/fourmonth" element={<FourMonth />} />
+            <Route path="/admin/fourtydays" element={<FourtyDays />} />
             {/* Add other routes as needed */}
           </Routes>
         </div>

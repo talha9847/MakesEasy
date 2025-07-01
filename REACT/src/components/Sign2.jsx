@@ -60,7 +60,7 @@ const SignOne = () => {
           withCredentials: true,
         }
       );
-      console.log("lhlloo")
+      console.log("lhlloo");
 
       if (result.status === 200) {
         toast.success("Registration successful! Redirecting to login...", {
@@ -102,7 +102,11 @@ const SignOne = () => {
 
   // Email verification function
   const handleEmailVerification = async () => {
-    if (!email || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+    console.log(email);
+    if (
+      !email ||
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
+    ) {
       toast.error("Please enter a valid email address first");
       return;
     }
@@ -110,17 +114,25 @@ const SignOne = () => {
     setIsVerifyingEmail(true);
     try {
       // Replace with your actual email verification API endpoint
-      const result = await axios.post("http://localhost:5169/api/User/SendOTP", {
-        email: email
-      });
-      
+      const result = await axios.post(
+        `http://localhost:5169/api/User/GenerateOtp/${email}`
+      );
+
       if (result.status === 200) {
         setShowOtpInput(true);
         toast.success("OTP sent to your email!");
       }
+      if (result.status == 306) {
+        toast.error("This is email is already Exist");
+        return;
+      }
     } catch (error) {
+      if (error.response && error.response.status === 306) {
+        toast.error("This email already exists.");
+      } else {
+        toast.error("Failed to send OTP. Please try again.");
+      }
       console.error("Email verification failed:", error);
-      toast.error("Failed to send OTP. Please try again.");
     } finally {
       setIsVerifyingEmail(false);
     }
@@ -136,11 +148,10 @@ const SignOne = () => {
     setIsVerifyingOtp(true);
     try {
       // Replace with your actual OTP verification API endpoint
-      const result = await axios.post("http://localhost:5169/api/User/VerifyOTP", {
-        email: email,
-        otp: otpValue
-      });
-      
+      const result = await axios.post(
+        `http://localhost:5169/api/User/VerifyOTP/${email}/${otpValue}`
+      );
+
       if (result.status === 200) {
         setIsEmailVerified(true);
         setShowOtpInput(false);
@@ -214,11 +225,10 @@ const SignOne = () => {
     <>
       <ToastContainer position="top-right" autoClose={3000} />
       <Navbar />
-      
-      <div className="min-h-screen bg-gray-50 py-4 px-3 sm:px-4 lg:px-6 mt-16 sm:mt-20">
+
+      <div className="min-h-screen bg-gray-50 py-4 px-3 sm:px-4 lg:px-6 mt-4 mb-4 sm:mt-12">
         <div className="max-w-3xl mx-auto">
           <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
-            
             {/* Compact Header */}
             <div className="bg-black px-4 py-4 sm:px-6 sm:py-5">
               <h2 className="text-xl sm:text-2xl font-bold text-white text-center">
@@ -232,7 +242,6 @@ const SignOne = () => {
             {/* Compact Form */}
             <div className="p-4 sm:p-6">
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                
                 {/* Personal Info - Compact */}
                 <div>
                   <h3 className="text-base font-semibold text-gray-900 mb-2 pb-1 border-b border-gray-200">
@@ -263,7 +272,9 @@ const SignOne = () => {
                         Last Name <span className="text-red-500">*</span>
                       </label>
                       <input
-                        {...register("LastName", { required: "Last name is required" })}
+                        {...register("LastName", {
+                          required: "Last name is required",
+                        })}
                         type="text"
                         className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:ring-1 focus:ring-gray-500 focus:border-transparent"
                         placeholder="Last name"
@@ -286,14 +297,19 @@ const SignOne = () => {
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">
                         Email Address <span className="text-red-500">*</span>
-                        {isEmailVerified && <span className="text-green-600 ml-1">✓ Verified</span>}
+                        {isEmailVerified && (
+                          <span className="text-green-600 ml-1">
+                            ✓ Verified
+                          </span>
+                        )}
                       </label>
                       <div className="flex gap-2">
                         <input
                           {...register("Email", {
                             required: "Email is required",
                             pattern: {
-                              value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                              value:
+                                /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                               message: "Invalid Email Format",
                             },
                           })}
@@ -329,7 +345,9 @@ const SignOne = () => {
                         <div className="flex gap-2">
                           <input
                             {...register("otp", {
-                              required: showOtpInput ? "OTP is required" : false,
+                              required: showOtpInput
+                                ? "OTP is required"
+                                : false,
                               pattern: {
                                 value: /^\d{6}$/,
                                 message: "OTP must be 6 digits",
@@ -411,7 +429,10 @@ const SignOne = () => {
                       >
                         <option value="">Select Country</option>
                         {countries.map((country) => (
-                          <option key={country.countryId} value={country.countryId}>
+                          <option
+                            key={country.countryId}
+                            value={country.countryId}
+                          >
                             {country.countryName}
                           </option>
                         ))}
@@ -428,7 +449,9 @@ const SignOne = () => {
                         State <span className="text-red-500">*</span>
                       </label>
                       <select
-                        {...register("stateId", { required: "Please select state" })}
+                        {...register("stateId", {
+                          required: "Please select state",
+                        })}
                         className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:ring-1 focus:ring-gray-500 focus:border-transparent"
                         value={selectedState}
                         onChange={(e) => {
@@ -455,7 +478,9 @@ const SignOne = () => {
                         District <span className="text-red-500">*</span>
                       </label>
                       <select
-                        {...register("distId", { required: "Please select district" })}
+                        {...register("distId", {
+                          required: "Please select district",
+                        })}
                         className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:ring-1 focus:ring-gray-500 focus:border-transparent"
                         value={selectedDistrict}
                         onChange={(e) => {
@@ -482,7 +507,9 @@ const SignOne = () => {
                         Taluka <span className="text-red-500">*</span>
                       </label>
                       <select
-                        {...register("talukaId", { required: "Please select taluka" })}
+                        {...register("talukaId", {
+                          required: "Please select taluka",
+                        })}
                         className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:ring-1 focus:ring-gray-500 focus:border-transparent"
                         value={selectedTaluka}
                         onChange={(e) => {
@@ -521,7 +548,10 @@ const SignOne = () => {
                       >
                         <option value="">Select Village</option>
                         {villages.map((village) => (
-                          <option key={village.villageId} value={village.villageId}>
+                          <option
+                            key={village.villageId}
+                            value={village.villageId}
+                          >
                             {village.villageName}
                           </option>
                         ))}
@@ -563,7 +593,11 @@ const SignOne = () => {
                           onClick={() => setShowPassword(!showPassword)}
                           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                         >
-                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                          {showPassword ? (
+                            <EyeOff size={16} />
+                          ) : (
+                            <Eye size={16} />
+                          )}
                         </button>
                       </div>
                       {errors.password && (
@@ -593,7 +627,11 @@ const SignOne = () => {
                           onClick={() => setShowCnfPassword(!showCnfPassword)}
                           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                         >
-                          {showCnfPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                          {showCnfPassword ? (
+                            <EyeOff size={16} />
+                          ) : (
+                            <Eye size={16} />
+                          )}
                         </button>
                       </div>
                       {errors.confirmPassword && (
@@ -607,14 +645,13 @@ const SignOne = () => {
 
                 {/* Compact Submit Button */}
                 <div className="pt-4">
-                  <button 
+                  <button
                     type="submit"
                     className="w-full bg-black text-white font-medium py-2.5 px-4 rounded-md hover:bg-gray-800 focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50 transition-all duration-200 text-sm"
                   >
                     Create Account
                   </button>
                 </div>
-                
               </form>
             </div>
           </div>

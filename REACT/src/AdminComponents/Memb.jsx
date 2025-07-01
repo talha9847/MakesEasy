@@ -356,43 +356,6 @@
 //   );
 // };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -413,7 +376,7 @@ export const Memb = () => {
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
@@ -426,11 +389,12 @@ export const Memb = () => {
     if (searchTerm === "") {
       setFilteredPeople(people);
     } else {
-      const filtered = people.filter((member) =>
-        member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        member.mobile.includes(searchTerm) ||
-        member.waqt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        member.occupation.toLowerCase().includes(searchTerm.toLowerCase())
+      const filtered = people.filter(
+        (member) =>
+          member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          member.mobile.includes(searchTerm) ||
+          member.waqt.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          member.occupation.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredPeople(filtered);
     }
@@ -443,12 +407,20 @@ export const Memb = () => {
       await getPeople();
       setShowModal(false);
     } else {
-      var res = axios.post(
-        "http://localhost:5169/api/People/InsertPeople/3/1/1/1/1",
-        data
+      const res = await axios.post(
+        "http://localhost:5169/api/People/InsertPeople",
+        data,
+        {
+          withCredentials: true,
+        }
       );
-      reset();
-      toast.success("Member added successfully!");
+      if (res.status == 200) {
+        reset();
+        toast.success("Member added successfully!");
+        await getPeople();
+      } else {
+        toast.error("An Error Occured");
+      }
     }
   };
 
@@ -524,9 +496,8 @@ export const Memb = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <ToastContainer position="top-right" autoClose={3000} />
-      
+
       {/* Mobile Header */}
-   
 
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
@@ -550,7 +521,7 @@ export const Memb = () => {
       <div className="navbar border-2 border-red-400 h-12">
         <Navbar />
       </div>
-      
+
       {/* Desktop Sidebar
       <div className="hidden lg:block border-2 border-red-500">
         <Sidebar />
@@ -564,7 +535,7 @@ export const Memb = () => {
             <Users className="hover:scale-125 hover:cursor-pointer" />
             Members
           </h1>
-          
+
           {/* Search Bar */}
           <div className="relative flex-1 lg:flex-none lg:w-80">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -615,26 +586,47 @@ export const Memb = () => {
               </span>
             )}
           </div>
-          
+
           {/* Desktop Table View */}
           <div className="hidden lg:block overflow-y-auto max-h-[500px]">
             <table className="min-w-full">
               <thead className="bg-gray-100 border-b border-gray-200 sticky top-0">
                 <tr>
-                  <th className="px-6 py-4 text-left text-gray-900 text-[17px] font-semibold">Name</th>
-                  <th className="px-6 py-4 text-left text-gray-900 text-[17px] font-semibold">Mobile</th>
-                  <th className="px-6 py-4 text-left text-gray-900 text-[17px] font-semibold">Waqt</th>
-                  <th className="px-6 py-4 text-left text-gray-900 text-[17px] font-semibold">Occupation</th>
-                  <th className="px-6 py-4 text-left text-gray-900 text-[17px] font-semibold">Actions</th>
+                  <th className="px-6 py-4 text-left text-gray-900 text-[17px] font-semibold">
+                    Name
+                  </th>
+                  <th className="px-6 py-4 text-left text-gray-900 text-[17px] font-semibold">
+                    Mobile
+                  </th>
+                  <th className="px-6 py-4 text-left text-gray-900 text-[17px] font-semibold">
+                    Waqt
+                  </th>
+                  <th className="px-6 py-4 text-left text-gray-900 text-[17px] font-semibold">
+                    Occupation
+                  </th>
+                  <th className="px-6 py-4 text-left text-gray-900 text-[17px] font-semibold">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {filteredPeople.map((member) => (
-                  <tr key={member.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap font-medium">{member.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{member.mobile}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{member.waqt}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{member.occupation}</td>
+                  <tr
+                    key={member.id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap font-medium">
+                      {member.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {member.mobile}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {member.waqt}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {member.occupation}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex space-x-2">
                         <button
@@ -671,10 +663,15 @@ export const Memb = () => {
           {/* Mobile Card View */}
           <div className="lg:hidden max-h-[500px] overflow-y-auto">
             {filteredPeople.map((member) => (
-              <div key={member.id} className="border-b border-gray-200 p-4 hover:bg-gray-50">
+              <div
+                key={member.id}
+                className="border-b border-gray-200 p-4 hover:bg-gray-50"
+              >
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-lg text-gray-900">{member.name}</h3>
+                    <h3 className="font-semibold text-lg text-gray-900">
+                      {member.name}
+                    </h3>
                     <p className="text-gray-600 text-sm">{member.mobile}</p>
                   </div>
                   <div className="flex space-x-2 ml-4">
@@ -710,7 +707,9 @@ export const Memb = () => {
                   </div>
                   <div>
                     <span className="text-gray-500">Occupation:</span>
-                    <span className="ml-1 font-medium">{member.occupation}</span>
+                    <span className="ml-1 font-medium">
+                      {member.occupation}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -744,7 +743,7 @@ export const Memb = () => {
             <h1 className="text-xl text-center font-semibold">
               {editing ? "Update Member" : "Add Member"}
             </h1>
-            
+
             <div className="flex flex-col">
               <input
                 {...register("name", {

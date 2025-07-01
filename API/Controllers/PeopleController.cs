@@ -32,8 +32,12 @@ namespace MyApp.Namespace
                 int dId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "distId")?.Value);
                 int sId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "stateId")?.Value);
                 int cId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "countryId")?.Value);
+                var waqts = new List<string> { "4 Month", "40 Days", "10 Days", "3 Days" };
+                if (!waqts.Contains(people.Waqt))
+                {
+                    return Conflict(new { message = "Erorr" });
+                }
                 var peopels = await _peopleRepo.InsertPeople(people, vId, tId, dId, sId, cId);
-
                 if (peopels == 1)
                 {
                     return Ok(new { message = "People Inserted successfully", People = peopels });

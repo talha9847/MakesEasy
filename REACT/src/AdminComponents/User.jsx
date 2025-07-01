@@ -110,7 +110,7 @@ const UserManagement = () => {
       )}
       
       
-      <div className="flex flex-col flex-1 lg:ml-64">
+      <div className="flex flex-col flex-1 lg:mx-8">
         {/* Mobile header with hamburger menu */}
         <div className="lg:hidden flex items-center justify-between p-4 bg-white border-b border-gray-200">
           <button
@@ -123,7 +123,7 @@ const UserManagement = () => {
           <div className="w-10" /> {/* Spacer for centering */}
         </div>
 
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-16 bg-gray-50">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:py-16 bg-gray-50">
           <div className="container mx-auto max-w-7xl">
             {/* Header section */}
             <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 mb-6">

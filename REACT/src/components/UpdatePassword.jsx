@@ -25,32 +25,35 @@ const UpdatePassword = () => {
   // Watch password field for validation
   const watchPassword = watch("password");
 
-//   useEffect(() => {
-//     const resetToken = searchParams.get("token");
-//     if (!resetToken) {
-//       toast.error("Invalid reset link. Please request a new one.");
-//       navigate("/forgot-password");
-//     } else {
-//       setToken(resetToken);
-//     }
-//   }, [searchParams, navigate]);
+  useEffect(() => {
+    const resetToken = searchParams.get("token");
+    if (!resetToken) {
+      toast.error("Invalid reset link. Please request a new one.", {
+        onClose: () => {
+          navigate("/forgotpassword");
+        },
+      });
+    } else {
+      setToken(resetToken);
+    }
+  }, [searchParams, navigate]);
 
   const onSubmit = async (data) => {
     setIsLoading(true);
     var form = new FormData();
-    form.append("token", token);
-    form.append("newPassword", data.password);
-    form.append("confirmPassword", data.confirmPassword);
-    
+    form.append("Password", data.password);
+    form.append("ConfirmPassword", data.confirmPassword);
+    form.append("Token", token);
+
     try {
       const result = await axios.post(
-        "http://localhost:5169/api/User/ResetPassword",
+        "http://localhost:5169/api/User/UpdatePassword",
         form,
         {
           withCredentials: true,
         }
       );
-      
+
       if (result.status === 200) {
         toast.success("Password updated successfully!");
         setTimeout(() => {
@@ -62,7 +65,9 @@ const UpdatePassword = () => {
     } catch (error) {
       console.error("Error updating password:", error);
       if (error.response?.status === 400) {
-        toast.error("Invalid or expired reset token. Please request a new reset link.");
+        toast.error(
+          "Invalid or expired reset token. Please request a new reset link."
+        );
       } else {
         toast.error("Something went wrong. Please try again.");
       }
@@ -73,8 +78,8 @@ const UpdatePassword = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} />
-      
+      <ToastContainer position="top-right" autoClose={1000} />
+
       <Navbar />
       <div className="bg-gray-100 min-h-[88.5vh] flex items-center justify-center px-4">
         <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200 w-full max-w-md">
@@ -111,12 +116,13 @@ const UpdatePassword = () => {
                     required: "Password is required",
                     minLength: {
                       value: 8,
-                      message: "Password must be at least 8 characters long"
+                      message: "Password must be at least 8 characters long",
                     },
                     pattern: {
                       value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-                      message: "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-                    }
+                      message:
+                        "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+                    },
                   })}
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your new password"
@@ -128,20 +134,43 @@ const UpdatePassword = () => {
                   className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
                 >
                   {showPassword ? (
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                      />
                     </svg>
                   ) : (
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
                     </svg>
                   )}
                 </button>
               </div>
-              <p className="text-red-500 text-sm">
-                {errors.password?.message}
-              </p>
+              <p className="text-red-500 text-sm">{errors.password?.message}</p>
             </div>
 
             {/* Confirm Password Input */}
@@ -168,7 +197,7 @@ const UpdatePassword = () => {
                   {...register("confirmPassword", {
                     required: "Please confirm your password",
                     validate: (value) =>
-                      value === watchPassword || "Passwords do not match"
+                      value === watchPassword || "Passwords do not match",
                   })}
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm your new password"
@@ -180,13 +209,38 @@ const UpdatePassword = () => {
                   className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
                 >
                   {showConfirmPassword ? (
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                      />
                     </svg>
                   ) : (
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
                     </svg>
                   )}
                 </button>
@@ -198,30 +252,48 @@ const UpdatePassword = () => {
 
             {/* Password Requirements */}
             <div className="bg-gray-50 p-4 rounded-md">
-              <h4 className="text-sm font-medium text-gray-800 mb-2">Password Requirements:</h4>
+              <h4 className="text-sm font-medium text-gray-800 mb-2">
+                Password Requirements:
+              </h4>
               <ul className="text-xs text-gray-600 space-y-1">
                 <li className="flex items-center">
-                  <span className={`inline-block w-2 h-2 rounded-full mr-2 ${
-                    watchPassword && watchPassword.length >= 8 ? 'bg-green-500' : 'bg-gray-300'
-                  }`}></span>
+                  <span
+                    className={`inline-block w-2 h-2 rounded-full mr-2 ${
+                      watchPassword && watchPassword.length >= 8
+                        ? "bg-green-500"
+                        : "bg-gray-300"
+                    }`}
+                  ></span>
                   At least 8 characters long
                 </li>
                 <li className="flex items-center">
-                  <span className={`inline-block w-2 h-2 rounded-full mr-2 ${
-                    watchPassword && /[A-Z]/.test(watchPassword) ? 'bg-green-500' : 'bg-gray-300'
-                  }`}></span>
+                  <span
+                    className={`inline-block w-2 h-2 rounded-full mr-2 ${
+                      watchPassword && /[A-Z]/.test(watchPassword)
+                        ? "bg-green-500"
+                        : "bg-gray-300"
+                    }`}
+                  ></span>
                   One uppercase letter
                 </li>
                 <li className="flex items-center">
-                  <span className={`inline-block w-2 h-2 rounded-full mr-2 ${
-                    watchPassword && /[a-z]/.test(watchPassword) ? 'bg-green-500' : 'bg-gray-300'
-                  }`}></span>
+                  <span
+                    className={`inline-block w-2 h-2 rounded-full mr-2 ${
+                      watchPassword && /[a-z]/.test(watchPassword)
+                        ? "bg-green-500"
+                        : "bg-gray-300"
+                    }`}
+                  ></span>
                   One lowercase letter
                 </li>
                 <li className="flex items-center">
-                  <span className={`inline-block w-2 h-2 rounded-full mr-2 ${
-                    watchPassword && /\d/.test(watchPassword) ? 'bg-green-500' : 'bg-gray-300'
-                  }`}></span>
+                  <span
+                    className={`inline-block w-2 h-2 rounded-full mr-2 ${
+                      watchPassword && /\d/.test(watchPassword)
+                        ? "bg-green-500"
+                        : "bg-gray-300"
+                    }`}
+                  ></span>
                   One number
                 </li>
               </ul>

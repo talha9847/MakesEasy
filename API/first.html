@@ -1,824 +1,406 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EliteMotors - Premium Car Dealership</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OTP Verification - Makes Easy</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0a0a0a;
-            color: #ffffff;
-            overflow-x: hidden;
-            cursor: none;
-        }
-
-        /* Custom Cursor */
-        .cursor {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #ff6b35;
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            transition: all 0.1s ease;
-            mix-blend-mode: difference;
-        }
-
-        .cursor.hover {
-            transform: scale(2);
-            background: rgba(255, 107, 53, 0.2);
-        }
-
-        /* Navigation */
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            padding: 20px 50px;
-            backdrop-filter: blur(20px);
-            background: rgba(10, 10, 10, 0.8);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #ff6b35, #f7931e);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 40px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .nav-links a:hover {
-            color: #ff6b35;
-            transform: translateY(-2px);
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #ff6b35, #f7931e);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        /* Hero Section */
-        .hero {
-            height: 100vh;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        #three-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            max-width: 800px;
-            padding: 0 20px;
-        }
-
-        .hero-title {
-            font-size: clamp(3rem, 8vw, 8rem);
-            font-weight: 900;
-            line-height: 0.9;
-            margin-bottom: 30px;
-            background: linear-gradient(135deg, #ffffff, #ff6b35);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: fadeInUp 1s ease-out;
-        }
-
-        .hero-subtitle {
-            font-size: 1.5rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 40px;
-            animation: fadeInUp 1s ease-out 0.2s both;
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 18px 40px;
-            background: linear-gradient(135deg, #ff6b35, #f7931e);
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            animation: fadeInUp 1s ease-out 0.4s both;
-        }
-
-        .cta-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .cta-button:hover::before {
-            left: 100%;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 40px rgba(255, 107, 53, 0.3);
-        }
-
-        /* Floating UI Elements */
-        .floating-stats {
-            position: absolute;
-            top: 50%;
-            left: 50px;
-            transform: translateY(-50%);
-            z-index: 2;
-            animation: fadeInLeft 1s ease-out 0.6s both;
-        }
-
-        .stat-item {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #ff6b35;
-            display: block;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .car-selector {
-            position: absolute;
-            bottom: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 2;
-            display: flex;
-            gap: 20px;
-            animation: fadeInUp 1s ease-out 0.8s both;
-        }
-
-        .car-option {
-            padding: 15px 25px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .car-option:hover, .car-option.active {
-            background: rgba(255, 107, 53, 0.2);
-            border-color: #ff6b35;
-            transform: translateY(-3px);
-        }
-
-        /* Features Section */
-        .features {
-            padding: 100px 50px;
-            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
-            position: relative;
-        }
-
-        .features::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #ff6b35, transparent);
-        }
-
-        .features-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-        }
-
-        .feature-card {
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #ff6b35, #f7931e);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .feature-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #ff6b35, #f7931e);
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 25px;
-        }
-
-        .feature-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: #ffffff;
-        }
-
-        .feature-description {
-            color: rgba(255, 255, 255, 0.7);
-            line-height: 1.6;
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .floating {
-            animation: float 6s ease-in-out infinite;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            nav {
-                padding: 15px 20px;
-            }
-            
-            .nav-links {
-                display: none;
-            }
-            
-            .floating-stats {
-                display: none;
-            }
-            
-            .car-selector {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            
-            .features {
-                padding: 50px 20px;
-            }
-        }
-
-        /* Particle Effect */
-        .particles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .particle {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: #ff6b35;
-            border-radius: 50%;
-            opacity: 0.5;
-            animation: particleFloat 20s linear infinite;
-        }
-
-        @keyframes particleFloat {
-            0% {
-                transform: translateY(100vh) translateX(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.5;
-            }
-            90% {
-                opacity: 0.5;
-            }
-            100% {
-                transform: translateY(-100px) translateX(100px);
-                opacity: 0;
-            }
-        }
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f8fafc;
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #334155;
+      }
+      .container {
+        width: 100%;
+        background-color: #f8fafc;
+        padding: 20px 0;
+      }
+      .email-wrapper {
+        max-width: 600px;
+        width: 100%;
+        background-color: #ffffff;
+        margin: 0 auto;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      .header {
+        background: black;
+        padding: 40px 30px;
+        text-align: center;
+      }
+      .logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        justify-content: center;
+      }
+      .logo-icon {
+        width: 40px;
+        height: 40px;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #ffffff;
+        font-size: 18px;
+      }
+      .logo-text {
+        color: #ffffff;
+        font-size: 28px;
+        font-weight: 600;
+      }
+      .tagline {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 16px;
+        margin-top: 12px;
+      }
+      .content {
+        padding: 50px 40px;
+      }
+      .icon-wrapper {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border: 3px solid #0ea5e9;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        margin: 0 auto;
+      }
+      .title {
+        text-align: center;
+        color: #0f172a;
+        font-size: 32px;
+        font-weight: 700;
+        margin: 20px 0;
+      }
+      .subtitle {
+        text-align: center;
+        color: #64748b;
+        font-size: 18px;
+        margin-bottom: 30px;
+      }
+      .message-box {
+        background: #f8fafc;
+        border-left: 4px solid #3b82f6;
+        padding: 24px;
+        margin: 30px 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .otp-container {
+        text-align: center;
+        margin: 40px 0;
+        padding: 30px;
+        background: linear-gradient(135deg, #f8faff 0%, #f0f9ff 100%);
+        border-radius: 16px;
+        border: 2px solid #e0f2fe;
+      }
+      .otp-code {
+        display: inline-block;
+        font-size: 36px;
+        font-weight: 700;
+        color: #1e293b;
+        background: #ffffff;
+        padding: 20px 40px;
+        border-radius: 12px;
+        letter-spacing: 8px;
+        border: 3px solid black;
+        font-family: 'Courier New', monospace;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      .otp-label {
+        display: block;
+        font-size: 14px;
+        color: #64748b;
+        margin-bottom: 15px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .warning-box {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 30px 0;
+      }
+      .info-box {
+        background: #f1f5f9;
+        border-radius: 12px;
+        padding: 24px;
+        margin: 30px 0;
+        border-left: 4px solid black;
+      }
+      .footer {
+        background: #f8fafc;
+        padding: 30px;
+        text-align: center;
+        border-top: 1px solid #e2e8f0;
+      }
+      .signature {
+        margin-top: 50px;
+        padding-top: 30px;
+        border-top: 2px solid #f1f5f9;
+      }
     </style>
-</head>
-<body>
-    <div class="cursor"></div>
-    
-    <nav>
-        <div class="nav-container">
-            <div class="logo">EliteMotors</div>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#inventory">Inventory</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#finance">Finance</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </div>
-    </nav>
+  </head>
+  <body>
+    <div class="container">
+      <table
+        class="email-wrapper"
+        cellpadding="0"
+        cellspacing="0"
+        border="0"
+        style="
+          max-width: 600px;
+          width: 100%;
+          background-color: #ffffff;
+          margin: 0 auto;
+          border-radius: 16px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+        "
+      >
+        <tr>
+          <td style="background: black; padding: 40px 30px; text-align: center">
+            <div style="display: flex; justify-content: center; align-items: center;">
+              <div
+                style="
+                  display: inline-block;
+                  width: 40px;
+                  height: 40px;
+                  border-radius: 8px;
+                  line-height: 40px;
+                  text-align: center;
+                  margin-right: 12px;
+                "
+              >
 
-    <section class="hero" id="home">
-        <canvas id="three-canvas"></canvas>
-        
-        <div class="particles"></div>
-        
-        <div class="floating-stats">
-            <div class="stat-item floating">
-                <span class="stat-number">500+</span>
-                <span class="stat-label">Premium Cars</span>
+
+
+              </div>
+
+              <span
+                style="
+                  color: #ffffff;
+                  font-size: 28px;
+                  font-weight: 600;
+                  vertical-align: middle;
+                "
+                >Makes Easy</span
+              >
             </div>
-            <div class="stat-item floating" style="animation-delay: -2s;">
-                <span class="stat-number">15K+</span>
-                <span class="stat-label">Happy Clients</span>
+            <p
+              style="
+                color: rgba(255, 255, 255, 0.9);
+                font-size: 16px;
+                margin-top: 12px;
+                margin-bottom: 0;
+              "
+            >
+              Your trusted productivity partner
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 50px 40px">
+            <div style="text-align: center; margin-bottom: 30px">
+              <div
+                style="
+                  width: 80px;
+                  height: 80px;
+                  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+                  border: 3px solid black;
+                  border-radius: 50%;
+                  display: inline-block;
+                  line-height: 74px;
+                  font-size: 32px;
+                "
+              >
+                🔐
+              </div>
             </div>
-            <div class="stat-item floating" style="animation-delay: -4s;">
-                <span class="stat-number">25</span>
-                <span class="stat-label">Years Experience</span>
+
+            <h1
+              style="
+                text-align: center;
+                color: #0f172a;
+                font-size: 32px;
+                font-weight: 700;
+                margin: 20px 0;
+              "
+            >
+              Verify Your Account
+            </h1>
+            <p
+              style="
+                text-align: center;
+                color: #64748b;
+                font-size: 18px;
+                margin-bottom: 30px;
+              "
+            >
+              Enter this verification code to complete your authentication
+            </p>
+
+            <div
+              style="
+                background: #f8fafc;
+                border-left: 4px solid black;
+                padding: 24px;
+                margin: 30px 0;
+                border-radius: 0 8px 8px 0;
+              "
+            >
+              <p style="margin: 0; font-size: 16px; color: #475569">
+                <strong>Hello,</strong><br /><br />We've generated a One-Time Password (OTP) for your <strong>Makes Easy</strong> account verification. Please use the code below to complete your authentication.
+              </p>
             </div>
-        </div>
 
-        <div class="hero-content">
-            <h1 class="hero-title">DRIVE THE<br>FUTURE</h1>
-            <p class="hero-subtitle">Experience luxury, performance, and innovation in our premium collection</p>
-            <a href="#inventory" class="cta-button">Explore Collection</a>
-        </div>
-
-        <div class="car-selector">
-            <div class="car-option active" data-car="sports">Sports</div>
-            <div class="car-option" data-car="luxury">Luxury</div>
-            <div class="car-option" data-car="suv">SUV</div>
-            <div class="car-option" data-car="electric">Electric</div>
-        </div>
-    </section>
-
-    <section class="features">
-        <div class="features-container">
-            <div class="feature-card">
-                <div class="feature-icon">🚗</div>
-                <h3 class="feature-title">Premium Selection</h3>
-                <p class="feature-description">Curated collection of the world's finest automobiles from luxury and performance brands.</p>
+            <div
+              style="
+                text-align: center;
+                margin: 40px 0;
+                padding: 30px;
+                background: linear-gradient(135deg, #f8faff 0%, #f0f9ff 100%);
+                border-radius: 16px;
+                border: 2px solid #e0f2fe;
+              "
+            >
+              <span
+                style="
+                  display: block;
+                  font-size: 14px;
+                  color: #64748b;
+                  margin-bottom: 15px;
+                  font-weight: 600;
+                  text-transform: uppercase;
+                  letter-spacing: 1px;
+                "
+                >Your OTP Code</span
+              >
+              <div
+                style="
+                  display: inline-block;
+                  font-size: 36px;
+                  font-weight: 700;
+                  color: #1e293b;
+                  background: #ffffff;
+                  padding: 20px 40px;
+                  border-radius: 12px;
+                  letter-spacing: 8px;
+                  border: 3px solid black;
+                  font-family: 'Courier New', monospace;
+                  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                "
+              >
+                {otp}
+              </div>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🔧</div>
-                <h3 class="feature-title">Expert Service</h3>
-                <p class="feature-description">Professional maintenance and repair services by certified technicians using genuine parts.</p>
+
+            <div
+              style="
+                background: #fef3c7;
+                border: 1px solid #f59e0b;
+                border-radius: 12px;
+                padding: 20px;
+                margin: 30px 0;
+              "
+            >
+              <p style="margin: 0; color: #92400e; font-size: 14px">
+                ⚠️ This OTP will expire in <strong>10 minutes</strong> for your security.
+              </p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">💰</div>
-                <h3 class="feature-title">Flexible Financing</h3>
-                <p class="feature-description">Competitive rates and flexible payment options to make your dream car affordable.</p>
+
+            <div
+              style="
+                background: #f1f5f9;
+                border-radius: 12px;
+                padding: 24px;
+                margin: 30px 0;
+                border-left: 4px solid black;
+              "
+            >
+              <p
+                style="
+                  margin: 0 0 8px 0;
+                  font-size: 14px;
+                  color: #475569;
+                  font-weight: 600;
+                "
+              >
+                📋 Instructions:
+              </p>
+              <ul style="margin: 8px 0; padding-left: 20px; color: #64748b; font-size: 14px;">
+                <li>Enter this 6-digit code in the verification field</li>
+                <li>Do not share this code with anyone</li>
+                <li>If you didn't request this, please contact support immediately</li>
+              </ul>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🛡️</div>
-                <h3 class="feature-title">Warranty Coverage</h3>
-                <p class="feature-description">Comprehensive warranty programs for peace of mind with every purchase.</p>
+
+            <p style="text-align: center; color: #64748b; font-size: 15px">
+              Didn't request this verification code? You can safely ignore this email or contact our support team if you have concerns.
+            </p>
+
+            <div
+              style="
+                margin-top: 50px;
+                padding-top: 30px;
+                border-top: 2px solid #f1f5f9;
+              "
+            >
+              <p style="color: #475569; font-size: 16px; margin-bottom: 5px">
+                Best regards,
+              </p>
+              <p
+                style="
+                  color: #0f172a;
+                  font-size: 18px;
+                  font-weight: 600;
+                  margin-top: 0;
+                "
+              >
+                The Makes Easy Team 🚀
+              </p>
             </div>
-        </div>
-    </section>
-
-    <script>
-        // Custom Cursor
-        const cursor = document.querySelector('.cursor');
-        const links = document.querySelectorAll('a, .car-option, .feature-card');
-
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
-
-        links.forEach(link => {
-            link.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-            link.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-        });
-
-        // Three.js Scene
-        let scene, camera, renderer, cars = [], currentCarIndex = 0;
-        let mouseX = 0, mouseY = 0;
-
-        function init() {
-            // Scene setup
-            scene = new THREE.Scene();
-            scene.fog = new THREE.Fog(0x0a0a0a, 10, 50);
-
-            // Camera
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 2, 8);
-
-            // Renderer
-            renderer = new THREE.WebGLRenderer({ 
-                canvas: document.getElementById('three-canvas'),
-                antialias: true,
-                alpha: true 
-            });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.2;
-
-            // Lighting
-            const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
-            scene.add(ambientLight);
-
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-            directionalLight.position.set(10, 10, 5);
-            directionalLight.castShadow = true;
-            directionalLight.shadow.mapSize.width = 2048;
-            directionalLight.shadow.mapSize.height = 2048;
-            scene.add(directionalLight);
-
-            // Accent lights
-            const spotLight1 = new THREE.SpotLight(0xff6b35, 1, 30, Math.PI / 6, 0.3);
-            spotLight1.position.set(-10, 10, 0);
-            scene.add(spotLight1);
-
-            const spotLight2 = new THREE.SpotLight(0xf7931e, 0.8, 30, Math.PI / 8, 0.3);
-            spotLight2.position.set(10, 8, -5);
-            scene.add(spotLight2);
-
-            // Create cars
-            createCars();
-
-            // Ground
-            const groundGeometry = new THREE.PlaneGeometry(100, 100);
-            const groundMaterial = new THREE.MeshLambertMaterial({ 
-                color: 0x1a1a1a, 
-                transparent: true, 
-                opacity: 0.8 
-            });
-            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-            ground.rotation.x = -Math.PI / 2;
-            ground.position.y = -1;
-            ground.receiveShadow = true;
-            scene.add(ground);
-
-            // Particles
-            createParticles();
-
-            // Mouse movement
-            document.addEventListener('mousemove', onMouseMove);
-            
-            // Car selector
-            document.querySelectorAll('.car-option').forEach((btn, index) => {
-                btn.addEventListener('click', () => {
-                    document.querySelector('.car-option.active').classList.remove('active');
-                    btn.classList.add('active');
-                    switchCar(index);
-                });
-            });
-
-            animate();
-        }
-
-        function createCars() {
-            const carConfigs = [
-                { color: 0xff3333, type: 'sports' },
-                { color: 0x333333, type: 'luxury' },
-                { color: 0x1a5490, type: 'suv' },
-                { color: 0x00ff88, type: 'electric' }
-            ];
-
-            carConfigs.forEach((config, index) => {
-                const carGroup = new THREE.Group();
-                
-                // Car body
-                const bodyGeometry = new THREE.BoxGeometry(4, 1, 1.8);
-                const bodyMaterial = new THREE.MeshPhysicalMaterial({
-                    color: config.color,
-                    metalness: 0.9,
-                    roughness: 0.1,
-                    clearcoat: 1.0,
-                    clearcoatRoughness: 0.1
-                });
-                const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-                body.position.y = 0.5;
-                body.castShadow = true;
-                carGroup.add(body);
-
-                // Car hood
-                const hoodGeometry = new THREE.BoxGeometry(1.5, 0.3, 1.6);
-                const hood = new THREE.Mesh(hoodGeometry, bodyMaterial);
-                hood.position.set(1.2, 1.1, 0);
-                hood.castShadow = true;
-                carGroup.add(hood);
-
-                // Windshield
-                const windshieldGeometry = new THREE.BoxGeometry(1.8, 0.8, 1.7);
-                const windshieldMaterial = new THREE.MeshPhysicalMaterial({
-                    color: 0x87ceeb,
-                    transparent: true,
-                    opacity: 0.3,
-                    metalness: 0,
-                    roughness: 0
-                });
-                const windshield = new THREE.Mesh(windshieldGeometry, windshieldMaterial);
-                windshield.position.set(-0.3, 1.2, 0);
-                carGroup.add(windshield);
-
-                // Wheels
-                const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
-                const wheelMaterial = new THREE.MeshLambertMaterial({ color: 0x222222 });
-                
-                const positions = [
-                    [1.3, 0, 1.2], [1.3, 0, -1.2],
-                    [-1.3, 0, 1.2], [-1.3, 0, -1.2]
-                ];
-                
-                positions.forEach(pos => {
-                    const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
-                    wheel.position.set(...pos);
-                    wheel.rotation.z = Math.PI / 2;
-                    wheel.castShadow = true;
-                    carGroup.add(wheel);
-                });
-
-                // Headlights
-                const headlightGeometry = new THREE.SphereGeometry(0.15, 8, 8);
-                const headlightMaterial = new THREE.MeshBasicMaterial({ 
-                    color: 0xffffff,
-                    emissive: 0xffffff,
-                    emissiveIntensity: 0.5
-                });
-                
-                const leftHeadlight = new THREE.Mesh(headlightGeometry, headlightMaterial);
-                leftHeadlight.position.set(2.1, 0.7, 0.6);
-                carGroup.add(leftHeadlight);
-                
-                const rightHeadlight = new THREE.Mesh(headlightGeometry, headlightMaterial);
-                rightHeadlight.position.set(2.1, 0.7, -0.6);
-                carGroup.add(rightHeadlight);
-
-                carGroup.position.x = index * 10 - 15;
-                carGroup.userData = { originalX: carGroup.position.x };
-                cars.push(carGroup);
-                scene.add(carGroup);
-            });
-
-            // Show first car
-            switchCar(0);
-        }
-
-        function createParticles() {
-            const particleCount = 50;
-            const particles = new THREE.Group();
-
-            for (let i = 0; i < particleCount; i++) {
-                const particleGeometry = new THREE.SphereGeometry(0.02, 4, 4);
-                const particleMaterial = new THREE.MeshBasicMaterial({
-                    color: Math.random() > 0.5 ? 0xff6b35 : 0xf7931e,
-                    transparent: true,
-                    opacity: Math.random() * 0.8 + 0.2
-                });
-                
-                const particle = new THREE.Mesh(particleGeometry, particleMaterial);
-                particle.position.set(
-                    (Math.random() - 0.5) * 50,
-                    Math.random() * 20,
-                    (Math.random() - 0.5) * 50
-                );
-                
-                particle.userData = {
-                    velocity: new THREE.Vector3(
-                        (Math.random() - 0.5) * 0.02,
-                        Math.random() * 0.02 + 0.01,
-                        (Math.random() - 0.5) * 0.02
-                    ),
-                    life: Math.random() * 100
-                };
-                
-                particles.add(particle);
-            }
-            
-            scene.add(particles);
-        }
-
-        function switchCar(index) {
-            currentCarIndex = index;
-            
-            cars.forEach((car, i) => {
-                const targetX = i === index ? 0 : (i - index) * 10;
-                
-                // Smooth transition
-                const animate = () => {
-                    const currentX = car.position.x;
-                    const diff = targetX - currentX;
-                    
-                    if (Math.abs(diff) > 0.01) {
-                        car.position.x += diff * 0.1;
-                        requestAnimationFrame(animate);
-                    } else {
-                        car.position.x = targetX;
-                    }
-                };
-                animate();
-            });
-        }
-
-        function onMouseMove(event) {
-            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // Camera movement based on mouse
-            camera.position.x += (mouseX * 2 - camera.position.x) * 0.05;
-            camera.position.y += (mouseY * 1 + 2 - camera.position.y) * 0.05;
-            camera.lookAt(0, 0, 0);
-
-            // Rotate current car
-            if (cars[currentCarIndex]) {
-                cars[currentCarIndex].rotation.y += 0.005;
-            }
-
-            // Animate particles
-            scene.traverse((child) => {
-                if (child.userData && child.userData.velocity) {
-                    child.position.add(child.userData.velocity);
-                    child.userData.life -= 1;
-                    
-                    if (child.userData.life <= 0 || child.position.y > 20) {
-                        child.position.set(
-                            (Math.random() - 0.5) * 50,
-                            -5,
-                            (Math.random() - 0.5) * 50
-                        );
-                        child.userData.life = Math.random() * 100;
-                    }
-                }
-            });
-
-            renderer.render(scene, camera);
-        }
-
-        // Window resize
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        // Floating particles in background
-        function createBackgroundParticles() {
-            const particlesContainer = document.querySelector('.particles');
-            
-            for (let i = 0; i < 20; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 20 + 's';
-                particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
-                particlesContainer.appendChild(particle);
-            }
-        }
-
-        // Smooth scrolling
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        });
-
-        // Initialize everything
-        window.addEventListener('load', () => {
-            init();
-            createBackgroundParticles();
-        });
-
-        // Add some dynamic lighting effects
-        setInterval(() => {
-            if (scene) {
-                const lights = scene.children.filter(child => child instanceof THREE.SpotLight);
-                lights.forEach(light => {
-                    light.intensity = 0.5 + Math.sin(Date.now() * 0.001) * 0.3;
-                });
-            }
-        }, 100);
-    </script>
-</body>
+          </td>
+        </tr>
+        <tr>
+          <td
+            style="
+              background: #f8fafc;
+              padding: 30px;
+              text-align: center;
+              border-top: 1px solid #e2e8f0;
+            "
+          >
+            <p style="color: #94a3b8; font-size: 12px; margin: 5px 0">
+              &copy; {DateTime.UtcNow.Year} Makes Easy. All rights reserved.
+            </p>
+            <p style="color: #cbd5e1; font-size: 11px; margin: 5px 0">
+              This email was sent because an OTP verification was requested for your account.
+            </p>
+            <p style="margin: 12px 0 5px 0; color: #94a3b8; font-size: 12px">
+              Need help? Contact us at
+              <a href="mailto:support@makeseasy.in" style="color: #3b82f6"
+                >support@makeseasy.in</a
+              >
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
 </html>

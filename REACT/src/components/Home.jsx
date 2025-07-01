@@ -123,10 +123,10 @@ const Home = () => {
             manage digital content.
           </p>
           <Link
-            to="/signup"
+            to="/signone"
             className="bg-black text-white px-10 py-4 rounded-lg text-xl font-medium hover:bg-gray-800 transition inline-block"
           >
-            Start Free Trial
+            Join Us Now
           </Link>
         </div>
       </div>

@@ -2,6 +2,7 @@ import React from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Talha from "../assets/ImgTalha.jpg";
+import { Link } from "react-router-dom";
 
 const AboutUs = () => {
   return (
@@ -45,7 +46,7 @@ const AboutUs = () => {
       </div>
 
       {/* Mission and Vision Section */}
-      <div className="container mx-auto px-6 py-20">
+      <div className="container mx-auto px-6 py-8">
         <div className="flex flex-col md:flex-row gap-16">
           <div className="md:w-1/2">
             <div className="">
@@ -67,8 +68,8 @@ const AboutUs = () => {
 
           <div className="md:w-1/2">
             <div className="">
-              <div className=" -top-10 -right-10 w-24 h-24 bg-black opacity-10 rounded-full"></div>
-              <div className=" -bottom-10 -left-10 w-32 h-32 bg-black opacity-10 rounded-full"></div>
+              <div className=" top-10 right-10 w-24 h-24 bg-black opacity-10 rounded-full"></div>
+              <div className=" bottom-10 left-10 w-32 h-32 bg-black opacity-10 rounded-full"></div>
               <div className=" z-10 bg-white p-10 border-2 border-black rounded-lg shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]">
                 <h2 className="text-3xl font-bold mb-6">Our Vision</h2>
                 <div className="w-16 h-1 bg-black mb-6"></div>
@@ -86,304 +87,7 @@ const AboutUs = () => {
       </div>
 
       {/* Improved Team Section with Round Shapes */}
-      <div className="bg-gray-50 py-24">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold">Meet Our Team</h2>
-            <div className="w-24 h-1 bg-black mx-auto mt-6 mb-8"></div>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Our talented team of professionals is dedicated to creating the
-              best experience for our users.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-            {/* Team Member 1 - Improved with Round Shape */}
-            <div className="group text-center">
-              <div className="mx-auto">
-                <div className=" w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-white shadow-xl">
-                  <img
-                    className="w-full h-full object-cover object-center duration-500 group-hover:scale-110"
-                    src={Talha || "/placeholder.svg"}
-                    alt="Talha Malek"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <h3 className="text-2xl font-bold text-black">Talha Malek</h3>
-                <p className="text-gray-600 mt-1">Founder & CEO</p>
-                <p className="text-gray-600 text-sm mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  Talha leads our company with a vision to simplify digital
-                  experiences for everyone.
-                </p>
-              </div>
-
-              {/* Social Icons */}
-              <div className="flex justify-center mt-4 space-x-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <a
-                  href="#"
-                  className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.593 1.323-1.325V1.325C24 .593 23.407 0 22.675 0z" />
-                  </svg>
-                </a>
-                <a
-                  href="#"
-                  className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                  </svg>
-                </a>
-                <a
-                  href="#"
-                  className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
-                  </svg>
-                </a>
-              </div>
-            </div>
-
-            {/* Team Member 2 - Improved with Round Shape */}
-            <div className="group text-center">
-              <div className="relative mx-auto">
-                {/* Decorative circle */}
-                <div className="absolute inset-0 rounded-full bg-black opacity-5 transform scale-110 group-hover:scale-125 transition-transform duration-300"></div>
-
-                {/* Border circle that animates on hover */}
-                <div className="absolute inset-0 rounded-full border-2 border-black opacity-20 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"></div>
-
-                {/* Main image container */}
-                <div className="relative w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-white shadow-xl">
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-0 group-hover:opacity-50 transition-opacity duration-300 z-10"></div>
-                  <img
-                    className="w-full h-full object-cover object-center transform transition-transform duration-500 group-hover:scale-110"
-                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=776&q=80"
-                    alt="Jane Smith"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <h3 className="text-2xl font-bold text-black">Jane Smith</h3>
-                <p className="text-gray-600 mt-1">Lead Developer</p>
-                <p className="text-gray-600 text-sm mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  Jane oversees all technical aspects of our platform, ensuring
-                  a seamless user experience.
-                </p>
-              </div>
-
-              {/* Social Icons */}
-              <div className="flex justify-center mt-4 space-x-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <a
-                  href="#"
-                  className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.593 1.323-1.325V1.325C24 .593 23.407 0 22.675 0z" />
-                  </svg>
-                </a>
-                <a
-                  href="#"
-                  className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                  </svg>
-                </a>
-                <a
-                  href="#"
-                  className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
-                  </svg>
-                </a>
-              </div>
-            </div>
-
-            {/* Team Member 3 - Improved with Round Shape */}
-            <div className="group text-center">
-              <div className="relative mx-auto">
-                {/* Decorative circle */}
-                <div className="absolute inset-0 rounded-full bg-black opacity-5 transform scale-110 group-hover:scale-125 transition-transform duration-300"></div>
-
-                {/* Border circle that animates on hover */}
-                <div className="absolute inset-0 rounded-full border-2 border-black opacity-20 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"></div>
-
-                {/* Main image container */}
-                <div className="relative w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-white shadow-xl">
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-0 group-hover:opacity-50 transition-opacity duration-300 z-10"></div>
-                  <img
-                    className="w-full h-full object-cover object-center transform transition-transform duration-500 group-hover:scale-110"
-                    src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
-                    alt="Mike Johnson"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <h3 className="text-2xl font-bold text-black">Mike Johnson</h3>
-                <p className="text-gray-600 mt-1">UI/UX Designer</p>
-                <p className="text-gray-600 text-sm mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  Mike crafts beautiful interfaces that make our platform
-                  intuitive and enjoyable to use.
-                </p>
-              </div>
-
-              {/* Social Icons */}
-              <div className="flex justify-center mt-4 space-x-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <a
-                  href="#"
-                  className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.593 1.323-1.325V1.325C24 .593 23.407 0 22.675 0z" />
-                  </svg>
-                </a>
-                <a
-                  href="#"
-                  className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                  </svg>
-                </a>
-                <a
-                  href="#"
-                  className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085a4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
-                  </svg>
-                </a>
-              </div>
-            </div>
-
-            {/* Team Member 4 - Improved with Round Shape */}
-            <div className="group text-center">
-              <div className="relative mx-auto">
-                {/* Decorative circle */}
-                <div className="absolute inset-0 rounded-full bg-black opacity-5 transform scale-110 group-hover:scale-125 transition-transform duration-300"></div>
-
-                {/* Border circle that animates on hover */}
-                <div className="absolute inset-0 rounded-full border-2 border-black opacity-20 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"></div>
-
-                {/* Main image container */}
-                <div className="relative w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-white shadow-xl">
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-0 group-hover:opacity-50 transition-opacity duration-300 z-10"></div>
-                  <img
-                    className="w-full h-full object-cover object-center transform transition-transform duration-500 group-hover:scale-110"
-                    src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1061&q=80"
-                    alt="Emily Davis"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <h3 className="text-2xl font-bold text-black">Emily Davis</h3>
-                <p className="text-gray-600 mt-1">Marketing Head</p>
-                <p className="text-gray-600 text-sm mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  Emily leads our marketing efforts, helping us connect with
-                  users who can benefit from our platform.
-                </p>
-              </div>
-
-              {/* Social Icons */}
-              <div className="flex justify-center mt-4 space-x-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <a
-                  href="#"
-                  className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.593 1.323-1.325V1.325C24 .593 23.407 0 22.675 0z" />
-                  </svg>
-                </a>
-                <a
-                  href="#"
-                  className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                  </svg>
-                </a>
-                <a
-                  href="#"
-                  className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085a4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
-                  </svg>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+  
 
       {/* Core Values Section */}
       <div className="container mx-auto px-6 py-24">
@@ -589,8 +293,8 @@ const AboutUs = () => {
             Join thousands of users who are already experiencing the simplicity
             and power of Makes Easy.
           </p>
-          <a
-            href="#"
+          <Link
+            to="/signone"
             className="inline-flex items-center px-8 py-3 border-2 border-black bg-black text-white font-medium text-lg rounded-md hover:bg-white hover:text-black transition-colors duration-300"
           >
             Sign Up Now
@@ -608,7 +312,7 @@ const AboutUs = () => {
                 d="M14 5l7 7m0 0l-7 7m7-7H3"
               ></path>
             </svg>
-          </a>
+          </Link>
         </div>
       </div>
     </div>

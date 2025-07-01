@@ -72,6 +72,11 @@ namespace MyApp.Namespace
 
         public async Task<IActionResult> Login([FromForm] string identifier, [FromForm] string password)
         {
+
+            if (string.IsNullOrWhiteSpace(identifier) || string.IsNullOrWhiteSpace(password))
+            {
+                return BadRequest(new { message = "Sorry bro this is not valid" });
+            }
             try
             {
 
@@ -100,6 +105,10 @@ namespace MyApp.Namespace
         [HttpPost("SetScope")]
         public async Task<IActionResult> SetScope([FromForm] string role, [FromForm] string tempToken)
         {
+            if (string.IsNullOrWhiteSpace(role) || string.IsNullOrWhiteSpace(tempToken))
+            {
+                return BadRequest(new { message = "Sorry bro this is not valid" });
+            }
             try
             {
                 string[] validRole = new string[5];
@@ -249,6 +258,11 @@ namespace MyApp.Namespace
         [Route("UpdateStatus/{id}/{status}")]
         public async Task<IActionResult> UpdateUser(int id, string status)
         {
+
+            if (id == 0 || string.IsNullOrWhiteSpace(status))
+            {
+                return BadRequest(new { message = "Errro in something" });
+            }
             try
             {
                 string type = User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
@@ -290,9 +304,15 @@ namespace MyApp.Namespace
             }
         }
 
-        [HttpPost("forgot-password")]
-        public async Task<IActionResult> SendEmail(string email)
+        [HttpPost("forgotPassword")]
+        public async Task<IActionResult> SendEmail([FromForm] string email)
         {
+
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return BadRequest("Email is required.");
+            }
             int Id = await _userRepo.GetUserByEmail(email);
             if (Id == 0)
             {
@@ -307,7 +327,7 @@ namespace MyApp.Namespace
                 return StatusCode(500, new { message = "Error while generating token." });
 
             }
-                var resetLink = $"http://localhost:5173/reset-password?token={token}";
+            var resetLink = $"http://localhost:5173/updatepassword?token={token}";
 
 
             await _emailService.SendEmail(email, "Reset Your Password", resetLink);
@@ -318,11 +338,89 @@ namespace MyApp.Namespace
 
 
         [HttpPost("UpdatePassword")]
-        public IActionResult UpdatePassword()
+        public async Task<IActionResult> UpdatePassword([FromForm] UpdatePasswordModel update)
         {
-            var expiry = DateTime.UtcNow.AddMinutes(30);
-            return Ok(new { message = "Lkkjlkj ", expiry });
+            if ((update.Password != update.ConfirmPassword) || (update.Password == null) || (update.ConfirmPassword == null) || string.IsNullOrEmpty(update.Token))
+            {
+                return Conflict(new { message = "Error Found" });
+            }
+            var tokenData = await _userRepo.GetToken(update.Token);
+            if (tokenData == null)
+            {
+                return Conflict("Some errror occurred");
+            }
+
+            if (tokenData.Used == true || tokenData.expiry > DateTime.UtcNow.AddMinutes(30))
+            {
+                return Conflict(new { message = "You are doing Cheating" });
+            }
+            var check = await _userRepo.CheckWithOldPassword(tokenData.UserId, update.Password);
+            if (check)
+            {
+                return Conflict(new { message = "The new password cannot be the same as your current password." });
+            }
+
+            var updatePassword = await _userRepo.UpdatePassword(tokenData.UserId, update.Password, tokenData.Id);
+            if (updatePassword == 1)
+            {
+                return Ok(new { message = "Password updated Successfully" });
+            }
+
+            return StatusCode(500, new { message = "Error in Updating password" });
         }
+
+
+
+        [HttpPost("GenerateOtp/{email}")]
+        public async Task<IActionResult> GenerateOtp(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return BadRequest("Email is required.");
+            }
+
+            bool Exist = await _userRepo.IsEmailExist(email);
+            if (Exist)
+            {
+                return StatusCode(306, new { message = "The user with this email has already exisst" });
+            }
+            var otp = _userRepo.GenerateOTP();
+            var saveOtp = await _userRepo.SaveOtp(email, otp);
+            if (saveOtp != 1)
+            {
+                return Conflict(new { message = "Error in Otp Generation" });
+            }
+            await _emailService.SendOTPAsync(email, otp);
+            return Ok(new { message = "Otp sent successfully check your mail" });
+        }
+
+        [HttpPost("VerifyOtp/{email}/{Otp}")]
+        public async Task<IActionResult> VerityOtp(string email, string Otp)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return BadRequest("Email is required.");
+            }
+
+            var count = await _userRepo.GetTriedCount(email);
+            if (count >= 10)
+            {
+                return Conflict(new { message = "Ohh i got error" });
+            }
+
+            var verify = await _userRepo.VerifyOtp(email, Otp);
+            if (verify)
+            {
+                return Ok(new { message = "Otp verified successfully" });
+            }
+            return Conflict(new { messag = "Otp not verified" });
+        }
+
+
+
+
+
+
 
     }
 }

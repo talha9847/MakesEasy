@@ -1,8 +1,11 @@
 using System.ComponentModel;
 using System.Data;
+using System.Security.Cryptography;
+using System.Text;
 using MakesEasy.Interfaces;
 using MakesEasy.Models;
 using Npgsql;
+using Npgsql.Internal;
 
 namespace MakesEasy.Repo;
 
@@ -381,6 +384,7 @@ public class UserRepo : IUserInterface
         {
             using (var conn = new NpgsqlConnection(_connectionString))
             {
+                await conn.OpenAsync();
                 var query = "INSERT INTO TokenData(userid,token,expiration)VALUES(@id,@token,@expiration)";
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
@@ -402,6 +406,300 @@ public class UserRepo : IUserInterface
 
             System.Console.WriteLine("Error: " + ex.Message);
             return -1;
+        }
+    }
+
+    public async Task<bool> IsEmailExist(string email)
+    {
+        try
+        {
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+                var query = "SELECT 1 FROM users WHERE email=@email";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@email", email);
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        catch (System.Exception ex)
+        {
+
+            System.Console.WriteLine("Error :" + ex.Message);
+            return false;
+        }
+    }
+
+
+    public string GenerateOTP()
+    {
+        using var rng = RandomNumberGenerator.Create();
+        var bytes = new byte[6];
+        rng.GetBytes(bytes);
+
+        var otp = new StringBuilder();
+        foreach (var b in bytes)
+        {
+            otp.Append((b % 10).ToString());
+        }
+
+        return otp.ToString();
+    }
+
+
+    public string HashOTP(string otp)
+    {
+        using var sha = SHA256.Create();
+        var bytes = Encoding.UTF8.GetBytes(otp);
+        var hash = sha.ComputeHash(bytes);
+        return Convert.ToBase64String(hash);
+    }
+
+    public async Task<int> SaveOtp(string email, string otp)
+    {
+        try
+        {
+            var otpHash = HashOTP(otp);
+            var expiresAt = DateTime.UtcNow.AddMinutes(10);
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+                var query = "INSERT INTO userotps(email,otp_hash,expires_at) VALUES(@email,@otp,@expires)";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@email", email);
+                    cmd.Parameters.AddWithValue("@otp", otpHash);
+                    cmd.Parameters.AddWithValue("@expires", expiresAt);
+                    int row = await cmd.ExecuteNonQueryAsync();
+                    if (row == 1)
+                    {
+                        return 1;
+                    }
+                }
+            }
+            return 0;
+
+        }
+        catch (System.Exception ex)
+        {
+
+            System.Console.WriteLine("Error: " + ex.Message);
+            return -1;
+        }
+    }
+
+    public async Task<int> GetTriedCount(string email)
+    {
+        try
+        {
+            int count = 0;
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                var query = "SELECT COUNT(*) userotps WHERE email=@email AND created_at>=NOW()::date";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@email", email);
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            count = reader.GetInt32(0);
+                            return count;
+                        }
+                    }
+                }
+            }
+            return 0;
+
+        }
+        catch (System.Exception ex)
+        {
+
+            System.Console.WriteLine("Error: " + ex.Message);
+            return -1;
+        }
+    }
+
+    public async Task<bool> VerifyOtp(string email, string Otp)
+    {
+        try
+        {
+            var hashOtp = HashOTP(Otp);
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+                var query = "SELECT id,is_used,expires_at FROM userotps WHERE email=@email AND otp_hash=@hash ORDER BY created_at DESC LIMIT 1";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@email", email);
+                    cmd.Parameters.AddWithValue("@hash", hashOtp);
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            int Id = reader.GetInt32(0);
+                            bool isUsed = reader.GetBoolean(1);
+                            DateTime expiresAt = reader.GetDateTime(2);
+
+                            if (isUsed || DateTime.UtcNow > expiresAt)
+                            {
+                                return false;
+                            }
+
+                            await reader.CloseAsync();
+
+                            var query1 = "UPDATE userotps SET is_used=TRUE WHERE id=@id";
+                            using (var cm = new NpgsqlCommand(query1, conn))
+                            {
+                                cm.Parameters.AddWithValue("@id", Id);
+                                int row = await cm.ExecuteNonQueryAsync();
+                                if (row == 1)
+                                {
+                                    return true;
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        catch (System.Exception ex)
+        {
+
+            System.Console.WriteLine("Error: " + ex.Message);
+            return false;
+        }
+    }
+
+
+    public async Task<TokenModel> GetToken(string token)
+    {
+        try
+        {
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+                var query = "SELECT userid,expiration,used,id FROM tokendata WHERE token=@token   AND expiration > NOW()";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@token", token);
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new TokenModel
+                            {
+                                UserId = reader.GetInt32(0),
+                                expiry = reader.GetDateTime(1),
+                                Used = reader.GetBoolean(2),
+                                Id = reader.GetInt32(3)
+                            };
+                       
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+        catch (System.Exception ex)
+        {
+
+            System.Console.WriteLine("Error: " + ex.Message);
+            return null;
+        }
+    }
+
+
+    public async Task<int> UpdatePassword(int id, string password, int tokenId)
+    {
+        try
+        {
+            var hashed = BCrypt.Net.BCrypt.HashPassword(password);
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+
+                using (var transaction = await conn.BeginTransactionAsync())
+                {
+                    var query = "UPDATE users SET password=@password WHERE id=@id";
+                    using (var cmd = new NpgsqlCommand(query, conn, transaction))
+                    {
+                        cmd.Parameters.AddWithValue("@password", hashed);
+                        cmd.Parameters.AddWithValue("@id", id);
+                        int row = await cmd.ExecuteNonQueryAsync();
+                        if (row != 1)
+                        {
+                            await transaction.RollbackAsync();
+                            return 0;
+                        }
+                    }
+
+                    var query2 = "UPDATE tokendata SET used=TRUE WHERE id=@id ";
+                    using (var cmd = new NpgsqlCommand(query2, conn, transaction))
+                    {
+                        cmd.Parameters.AddWithValue("@id", tokenId);
+                        int row = await cmd.ExecuteNonQueryAsync();
+                        if (row != 1)
+                        {
+                            await transaction.RollbackAsync();
+                            return 0;
+                        }
+                    }
+
+                    await transaction.CommitAsync();
+                    return 1;
+                }
+
+            }
+        }
+        catch (System.Exception ex)
+        {
+
+            System.Console.WriteLine("Error: " + ex.Message);
+            return -1;
+        }
+    }
+
+
+    public async Task<bool> CheckWithOldPassword(int id, string password)
+    {
+        try
+        {
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+                var query = "SELECT password FROM users WHERE id=@id ";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", id);
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            string storedHash = reader.GetString(0);
+                            return BCrypt.Net.BCrypt.Verify(password, storedHash);
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        catch (System.Exception ex)
+        {
+
+            System.Console.WriteLine("Error: " + ex.Message);
+            return false;
         }
     }
 

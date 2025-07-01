@@ -21,16 +21,16 @@ const ForgotPassword = () => {
     setIsLoading(true);
     var form = new FormData();
     form.append("email", data.email);
-    
+
     try {
       const result = await axios.post(
-        "http://localhost:5169/api/User/ForgotPassword",
+        "http://localhost:5169/api/User/forgotPassword",
         form,
         {
           withCredentials: true,
         }
       );
-      
+
       if (result.status === 200) {
         setEmailSent(true);
         toast.success("Password reset link sent to your email!");
@@ -48,7 +48,7 @@ const ForgotPassword = () => {
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
-      
+
       <Navbar />
       <div className="bg-gray-100 min-h-[88.5vh] flex items-center justify-center px-4">
         <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200 w-full max-w-md">
@@ -58,10 +58,9 @@ const ForgotPassword = () => {
               {emailSent ? "Check Your Email" : "Forgot Password?"}
             </h2>
             <p className="text-gray-600 mt-2">
-              {emailSent 
-                ? "We've sent a password reset link to your email address" 
-                : "Enter your email address and we'll send you a link to reset your password"
-              }
+              {emailSent
+                ? "We've sent a password reset link to your email address"
+                : "Enter your email address and we'll send you a link to reset your password"}
             </p>
           </div>
 
@@ -91,8 +90,8 @@ const ForgotPassword = () => {
                         required: "Email is required",
                         pattern: {
                           value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                          message: "Please enter a valid email address"
-                        }
+                          message: "Please enter a valid email address",
+                        },
                       })}
                       type="email"
                       placeholder="Enter your email address"
@@ -158,7 +157,8 @@ const ForgotPassword = () => {
               {/* Instructions */}
               <div className="space-y-4">
                 <p className="text-sm text-gray-600">
-                  If an account with that email exists, you'll receive a password reset link shortly.
+                  If an account with that email exists, you'll receive a
+                  password reset link shortly.
                 </p>
                 <p className="text-sm text-gray-600">
                   Didn't receive the email? Check your spam folder or try again.
@@ -173,7 +173,7 @@ const ForgotPassword = () => {
                 >
                   Try Different Email
                 </button>
-                
+
                 <Link
                   to="/login"
                   className="block w-full px-4 py-3 bg-gray-100 text-gray-700 font-medium rounded-md shadow-sm hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 transition-colors duration-200 text-center"

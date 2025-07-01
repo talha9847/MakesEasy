@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-export const Student = () => {
+export const FourtyDays = () => {
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editId, setEditId] = useState(0);
@@ -121,7 +121,7 @@ export const Student = () => {
         <div className="top flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-4">
           <h1 className="text-xl sm:text-2xl lg:text-3xl flex items-center gap-3 font-bold text-gray-800">
             <Users className="hover:scale-125 hover:cursor-pointer transition-transform duration-200 w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8" />
-            Students
+             Companions Of 40-Days Khuruj
           </h1>
           <button
             onClick={() => {
@@ -162,16 +162,10 @@ export const Student = () => {
                         Name
                       </th>
                       <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-gray-900 text-sm lg:text-base font-semibold">
-                        Mobile
+                        Total
                       </th>
                       <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-gray-900 text-sm lg:text-base font-semibold">
-                        Waqt
-                      </th>
-                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-gray-900 text-sm lg:text-base font-semibold">
-                        Field
-                      </th>
-                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-gray-900 text-sm lg:text-base font-semibold">
-                        Year
+                        Last TIme
                       </th>
                       <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-gray-900 text-sm lg:text-base font-semibold">
                         Actions
@@ -180,7 +174,6 @@ export const Student = () => {
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     <tr className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">0</td>
                       <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">John Doe</td>
                       <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">9876543210</td>
                       <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">40 Days</td>
@@ -198,14 +191,12 @@ export const Student = () => {
                       </td>
                     </tr>
 
-                    {students.map((c,ind) => (
+                    {students.map((c) => (
                       <tr key={c.id} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">{ind+1}</td>
                         <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">{c.name}</td>
                         <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">{c.mobile}</td>
                         <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">{c.waqt}</td>
                         <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">{c.field}</td>
-                        <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">{c.year}</td>
                         <td className="px-4 lg:px-6 py-3 lg:py-4">
                           <div className="flex space-x-2">
                             <button
@@ -568,4 +559,4 @@ export const Student = () => {
   );
 };
 
-export default Student;
+export default FourtyDays;

@@ -98,6 +98,8 @@ var conn = builder.Configuration.GetConnectionString("conn");
 builder.Services.AddScoped<IUserInterface, UserRepo>(provider => new UserRepo(conn));
 builder.Services.AddScoped<ILocationInterface, LocationRepo>(provider => new LocationRepo(conn));
 builder.Services.AddScoped<IPeopleInterface, PeopleRepo>(provider => new PeopleRepo(conn));
+builder.Services.AddScoped<IMessageInterface, MessageRepo>(provider => new MessageRepo(conn));
+builder.Services.AddScoped<IFourMonthInterface, FourMonthRepo>(provider => new FourMonthRepo(conn));
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<EmailService>();
 
