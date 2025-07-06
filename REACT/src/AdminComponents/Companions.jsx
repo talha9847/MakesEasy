@@ -59,14 +59,6 @@ const Companions = () => {
     }
   };
 
-  const handleAddDetail = () => {
-    setShowAddForm(true);
-  };
-
-  const handleEdit = (index) => {
-    console.log("Edit item:", index);
-    setShowActionMenu(null);
-  };
 
   const handleDelete = (index) => {
     // Add your delete logic here
@@ -83,7 +75,7 @@ const Companions = () => {
       if (edit) {
         formData.append("id", editId);
         console.log(data);
-        const result = await axios.post(
+        const result = await axios.put(
           "http://localhost:5169/api/FourMonth/UpdateCompanions",
           formData,
           {
@@ -242,7 +234,14 @@ const Companions = () => {
               </h2>
               <div className="flex items-center gap-4">
                 <button
-                  onClick={handleAddDetail}
+                  onClick={() => {
+                    setEdit(false);
+                    setShowAddForm(true)
+                    reset({
+                      date:"",
+                      place:""
+                    })
+                  }}
                   className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg hover:bg-gray-100 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
                 >
                   <Plus className="w-4 h-4" />
@@ -410,7 +409,7 @@ const Companions = () => {
                                       .slice(0, 7), // "YYYY-MM"
                                     place: c.place,
                                   });
-                                  showActionMenu(null)
+                                  showActionMenu(null);
                                   setShowAddForm(true);
                                 }}
                                 className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"

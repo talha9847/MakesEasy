@@ -583,8 +583,11 @@ public class UserRepo : IUserInterface
     }
 
 
+#pragma warning disable CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
     public async Task<TokenModel> GetToken(string token)
+#pragma warning restore CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
     {
+        
         try
         {
             using (var conn = new NpgsqlConnection(_connectionString))

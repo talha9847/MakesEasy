@@ -88,7 +88,7 @@ namespace MyApp.Namespace
             }
         }
 
-        [HttpPost("UpdateCompanions")]
+        [HttpPut("UpdateCompanions")]
         public async Task<IActionResult> UpdateCompanionsData([FromForm] FourMonthModel model)
         {
             var result = await _fourMonthReop.UpdateCompanionsData(model);
@@ -99,6 +99,37 @@ namespace MyApp.Namespace
             else
             {
                 return BadRequest(new { message = "Error in Editing" });
+            }
+        }
+
+        [HttpPost("Add40Companion")]
+        public async Task<IActionResult> AddCompanion([FromForm] FourMonthModel model)
+        {
+            if (String.IsNullOrEmpty(model.Place))
+            {
+                return Conflict(new { message = "Required" });
+            }
+            var result = await _fourMonthReop.AddCompanionData(model);
+            if (result == 1)
+            {
+                return Ok(new { message = "Added Successfully" });
+            }
+            else
+            {
+                return BadRequest(new { message = "Error found successfully" });
+            }
+        }
+        [HttpPut("UpdateCompanion")]
+        public async Task<IActionResult> UpdateCompanion([FromForm]FourMonthModel model)
+        {
+            var result = await _fourMonthReop.UpdateCompanionData(model);
+            if (result == 1)
+            {
+                return Ok(new { message = "Updated successfully" });
+            }
+            else
+            {
+                return BadRequest(new { message = "Error Found" });
             }
         }
     }

@@ -253,4 +253,66 @@ public class FourMonthRepo : IFourMonthInterface
             return -1;
         }
     }
+
+    public async Task<int> AddCompanionData(FourMonthModel model)
+    {
+        try
+        {
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+                var query = "INSERT INTO fourtydaysdata(peopleid,date,places) VALUES(@pId,@date,@place)";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@pId", model.PId);
+                    cmd.Parameters.AddWithValue("@date", model.LastTime);
+                    cmd.Parameters.AddWithValue("@place", model.Place);
+                    int row = await cmd.ExecuteNonQueryAsync();
+                    if (row == 1)
+                    {
+                        return 1;
+                    }
+                }
+            }
+            return 0;
+
+        }
+        catch (System.Exception ex)
+        {
+
+            System.Console.WriteLine("Error: " + ex.Message);
+            return -1;
+        }
+    }
+
+   public async  Task<int> UpdateCompanionData(FourMonthModel model)
+    {
+        try
+        {
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+                var query = "UPDATE fourtydaysdata SET date=@date,places=@place WHERE id=@id";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@date", model.LastTime);
+                    cmd.Parameters.AddWithValue("@place", model.Place);
+                    cmd.Parameters.AddWithValue("@id", model.Id);
+                    int row = await cmd.ExecuteNonQueryAsync();
+                    if (row == 1)
+                    {
+                        return 1;
+                    }
+                }
+            }
+            return 0;
+
+        }
+        catch (System.Exception ex)
+        {
+
+            System.Console.WriteLine("Error: " + ex.Message);
+            return -1;
+        }
+    }
 }
