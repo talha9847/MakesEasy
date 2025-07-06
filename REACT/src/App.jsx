@@ -18,6 +18,8 @@ import UpdatePassword from "./components/UpdatePassword";
 import SignOne from "./components/Sign2";
 import FourMonth from "./AdminComponents/FourMonth";
 import FourtyDays from "./AdminComponents/FourtyDays";
+import Companions from "./AdminComponents/Companions";
+import Companion from "./AdminComponents/Companion";
  const App = () => {
   return (
     <Router>
@@ -40,7 +42,9 @@ import FourtyDays from "./AdminComponents/FourtyDays";
             <Route path="/signone" element={<SignOne />} />
             <Route path="/admin/fourmonth" element={<FourMonth />} />
             <Route path="/admin/fourtydays" element={<FourtyDays />} />
-            {/* Add other routes as needed */}
+            <Route path="/admin/companions" element={<Companions />} />
+            <Route path="/admin/companion" element={<Companion />} />
+              
           </Routes>
         </div>
         <Footer /> {/* Footer will stay at the bottom */}

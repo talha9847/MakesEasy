@@ -1,18 +1,20 @@
 "use client";
 
-import { Users, UserPlus, Edit, Trash2 } from "lucide-react";
+import { Users, Edit, Trash2, ArrowLeft, Calendar, Hash } from "lucide-react";
 import Navbar from "./Navbar";
-import Sidebar from "./Sidebar";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Swal from "sweetalert2";
 
 export const FourtyDays = () => {
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editId, setEditId] = useState(0);
   const [students, setStudents] = useState([]);
+  const [companion, setCompanion] = useState([]);
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -20,204 +22,156 @@ export const FourtyDays = () => {
     formState: { errors },
   } = useForm();
 
-  const getStudents = async () => {
-    console.log("ljklk");
+  const getCompanions = async () => {
     const result = await axios.get(
-      "http://localhost:5169/api/People/GetStudents",
+      "http://localhost:5169/api/FourMonth/GetFourtyDays",
       { withCredentials: true }
     );
     if (result.status == 200) {
-      console.log(result.data);
-      setStudents(result.data.students);
-    }
-  };
-
-  const onSubmit = async (data) => {
-    if (editing) {
-      let id = editId;
-      let updatedData = { ...data, id: id };
-      const result = await axios.put(
-        "http://localhost:5169/api/People/UpdateStudent",
-        updatedData
-      );
-      if (result.status == 200) {
-        await getStudents();
-        setShowModal(false);
-      }
-    } else {
-      const result = await axios.post(
-        "http://localhost:5169/api/People/InsertStudent",
-        data,
-        { withCredentials: true }
-      );
-      if (result.status == 200) {
-        await getStudents();
-        setShowModal(false);
-      }
-    }
-  };
-
-  const editFunction = (c) => {
-    setShowModal(true);
-    reset({
-      name: c.name,
-      mobile: c.mobile,
-      age: c.age,
-      waqt: c.waqt,
-      field: c.field,
-      year: c.year,
-    });
-  };
-
-  const deleteFunction = async (id) => {
-    const result = await Swal.fire({
-      title: "Are sure you want to delete student?",
-      text: "This action cannot be undone.",
-      icon: "warning",
-      background: "#111827",
-      color: "#f9fafb",
-      iconColor: "#f59e0b",
-      showCancelButton: true,
-      confirmButtonColor: "#f9fafb",
-      cancelButtonColor: "#374151",
-      confirmButtonText: "Yes, delete it",
-      cancelButtonText: "Cancel",
-      customClass: {
-        popup: "border border-gray-700 shadow-lg",
-        title: "text-lg font-semibold tracking-wide",
-        htmlContainer: "text-gray-300",
-        confirmButton:
-          "bg-white text-gray-900 px-4 py-2 font-medium uppercase tracking-wide",
-        cancelButton:
-          "bg-gray-700 text-gray-100 px-4 py-2 font-medium uppercase tracking-wide",
-        actions: "gap-3",
-      },
-    });
-
-    if (result.isConfirmed) {
-      const del = await axios.delete(
-        `http://localhost:5169/api/People/DeleteStudent/${id}`,
-        { withCredentials: true }
-      );
-
-      if (del.status == 200) {
-        alert("Deleted Successfully");
-      }
+      console.log(result.data.result);
+      setCompanion(result.data.result);
     }
   };
 
   useEffect(() => {
-    getStudents();
+    getCompanions();
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
       <div className="navbar border-2 border-red-400 h-12">
         <Navbar />
       </div>
 
       <div className="lg:mx-8 ml-0 px-3 sm:px-4 lg:px-6">
         {/* Header Section */}
-        <div className="top flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-4">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl flex items-center gap-3 font-bold text-gray-800">
-            <Users className="hover:scale-125 hover:cursor-pointer transition-transform duration-200 w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8" />
-             Companions Of 40-Days Khuruj
-          </h1>
-          <button
-            onClick={() => {
-              setShowModal(true);
-              reset({
-                name: "",
-                mobile: "",
-                waqt: "",
-                age: "",
-                field: "",
-                year: "",
-              });
-            }}
-            className="flex items-center justify-center border-2 border-black py-2 px-4 rounded-lg hover:bg-black hover:text-white transition-all duration-200 w-full sm:w-auto text-sm sm:text-base font-medium"
-          >
-            <UserPlus className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-            <span>Add Student</span>
-          </button>
+        <div className="top flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-6">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-lg hover:shadow-xl border border-gray-200 hover:bg-gray-50 transition-all duration-200 group"
+            >
+              <ArrowLeft className="w-5 h-5 text-gray-600 group-hover:text-black transition-colors" />
+            </button>
+            <div>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl flex items-center gap-3 font-bold text-gray-800">
+                <div className="p-2 bg-black rounded-xl shadow-lg">
+                  <Users className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+                </div>
+                Companions Of 40 Days Khuruj
+              </h1>
+              <p className="text-sm text-gray-600 mt-1 ml-1">
+                Manage and track companion information
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Overview */}
+        <div className="mb-6">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-black rounded-xl">
+                  <Users className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{companion.length}</p>
+                  <p className="text-sm text-gray-600">Total Companions</p>
+                </div>
+              </div>
+              <div className="hidden sm:block">
+                <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
+                  <Calendar className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm text-gray-700">4-Month</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Table Section */}
         <div className="table mt-4 sm:mt-6 lg:mt-8 w-full">
-          <div className="head flex flex-col rounded-lg overflow-hidden shadow-lg border border-gray-200 bg-white">
-            <h1 className="pl-4 sm:pl-6 text-lg sm:text-xl font-sans font-semibold py-4 bg-black text-white">
-              Student List
-            </h1>
-            
-            {/* Desktop Table View */}
+          <div className="head flex flex-col rounded-2xl overflow-hidden shadow-2xl border border-gray-200 bg-white">
+            <div className="px-6 py-5 bg-gradient-to-r from-black to-gray-800">
+              <div className="flex items-center justify-between">
+                <h1 className="text-lg sm:text-xl font-sans font-semibold text-white flex items-center gap-3">
+                  <Hash className="w-5 h-5" />
+                  List Of Companions
+                </h1>
+                <div className="hidden sm:block">
+                  <span className="px-3 py-1 bg-white/20 rounded-full text-sm text-white">
+                    {companion.length} entries
+                  </span>
+                </div>
+              </div>
+            </div>
+
             <div className="hidden md:block overflow-x-auto">
               <div className="max-h-[400px] lg:max-h-[500px] overflow-y-auto">
                 <table className="min-w-full">
-                  <thead className="bg-gray-100 border-b border-gray-200 sticky top-0">
+                  <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
                     <tr>
-                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-gray-900 text-sm lg:text-base font-semibold">
-                        No.
+                      <th className="px-4 lg:px-6 py-4 text-left text-gray-900 text-sm lg:text-base font-semibold">
+                        <div className="flex items-center gap-2">
+                          <Hash className="w-4 h-4" />
+                          No.
+                        </div>
                       </th>
-                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-gray-900 text-sm lg:text-base font-semibold">
-                        Name
+                      <th className="px-4 lg:px-6 py-4 text-left text-gray-900 text-sm lg:text-base font-semibold">
+                        <div className="flex items-center gap-2">
+                          <Users className="w-4 h-4" />
+                          Name
+                        </div>
                       </th>
-                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-gray-900 text-sm lg:text-base font-semibold">
+                      <th className="px-4 lg:px-6 py-4 text-left text-gray-900 text-sm lg:text-base font-semibold">
                         Total
                       </th>
-                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-gray-900 text-sm lg:text-base font-semibold">
-                        Last TIme
-                      </th>
-                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-gray-900 text-sm lg:text-base font-semibold">
-                        Actions
+                      <th className="px-4 lg:px-6 py-4 text-left text-gray-900 text-sm lg:text-base font-semibold">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          Last Time
+                        </div>
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    <tr className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">John Doe</td>
-                      <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">9876543210</td>
-                      <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">40 Days</td>
-                      <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">Computer Science</td>
-                      <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">2023</td>
-                      <td className="px-4 lg:px-6 py-3 lg:py-4">
-                        <div className="flex space-x-2">
-                          <button className="p-2 rounded-full hover:bg-gray-200 transition-colors">
-                            <Edit size={16} className="text-blue-700" />
-                          </button>
-                          <button className="p-2 rounded-full hover:bg-gray-200 transition-colors">
-                            <Trash2 size={16} className="text-red-700" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-
-                    {students.map((c) => (
-                      <tr key={c.id} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">{c.name}</td>
-                        <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">{c.mobile}</td>
-                        <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">{c.waqt}</td>
-                        <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm lg:text-base">{c.field}</td>
-                        <td className="px-4 lg:px-6 py-3 lg:py-4">
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => {
-                                setEditing(true);
-                                editFunction(c);
-                                setEditId(c.id);
-                              }}
-                              className="p-2 rounded-full hover:bg-gray-200 transition-colors"
-                            >
-                              <Edit size={16} className="text-blue-700" />
-                            </button>
-                            <button
-                              onClick={() => {
-                                deleteFunction(c.id);
-                              }}
-                              className="p-2 rounded-full hover:bg-gray-200 transition-colors"
-                            >
-                              <Trash2 size={16} className="text-red-700" />
-                            </button>
+                  <tbody className="divide-y divide-gray-100">
+                    {companion.map((c, ind) => (
+                      <tr
+                        onClick={() => {
+                          navigate("/admin/companion", {
+                            state: { id: c.id, name: c.name },
+                          });
+                        }}
+                        key={c.id}
+                        className="hover:bg-gradient-to-r hover:from-gray-50 hover:to-white transition-all duration-200 cursor-pointer group"
+                      >
+                        <td className="px-4 lg:px-6 py-4 text-sm lg:text-base">
+                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-black text-white text-sm font-semibold group-hover:bg-gray-800 transition-colors">
+                            {ind + 1}
                           </div>
+                        </td>
+                        <td className="px-4 lg:px-6 py-4 text-sm lg:text-base font-medium text-gray-900">
+                          {c.name}
+                        </td>
+                        <td className="px-4 lg:px-6 py-4 text-sm lg:text-base">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                            {c.total}
+                          </span>
+                        </td>
+                        <td className="px-4 lg:px-6 py-4 text-sm lg:text-base text-gray-600">
+                          {c.lastTime === "1111-11-11"
+                            ? (
+                              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                                Not found
+                              </span>
+                            )
+                            : new Date(c.lastTime)
+                                .toLocaleDateString("en-US", {
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .replace(" ", ", ")}
                         </td>
                       </tr>
                     ))}
@@ -226,334 +180,88 @@ export const FourtyDays = () => {
               </div>
             </div>
 
-            {/* Mobile Card View */}
-            <div className="md:hidden max-h-[400px] overflow-y-auto">
-              {/* Sample Student Card */}
-              <div className="border-b border-gray-200 p-4 hover:bg-gray-50 transition-colors">
-                <div className="space-y-2">
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-semibold text-gray-900">John Doe</h3>
-                    <div className="flex space-x-2">
-                      <button className="p-1 rounded-full hover:bg-gray-200 transition-colors">
-                        <Edit size={14} className="text-blue-700" />
-                      </button>
-                      <button className="p-1 rounded-full hover:bg-gray-200 transition-colors">
-                        <Trash2 size={14} className="text-red-700" />
-                      </button>
-                    </div>
+            {/* Enhanced Mobile Card View */}
+            <div className="md:hidden max-h-[450px] overflow-y-auto">
+              {companion.map((c, ind) => (
+                <div
+                  onClick={() => {
+                    navigate("/admin/companion", {
+                      state: { id: c.id, name: c.name },
+                    });
+                  }}
+                  key={c.id}
+                  className="relative border-b border-gray-100 last:border-b-0 bg-white hover:bg-gradient-to-r hover:from-gray-50 hover:to-white transition-all duration-300 cursor-pointer group"
+                >
+                  {/* Card Number Badge */}
+                  <div className="absolute top-4 left-4 bg-black text-white text-xs font-bold px-3 py-1.5 rounded-full min-w-[28px] text-center group-hover:bg-gray-800 transition-colors">
+                    {ind + 1}
                   </div>
-                  <div className="grid grid-cols-2 gap-2 text-sm text-gray-600">
-                    <div><span className="font-medium">Mobile:</span> 9876543210</div>
-                    <div><span className="font-medium">Waqt:</span> 40 Days</div>
-                    <div><span className="font-medium">Field:</span> Computer Science</div>
-                    <div><span className="font-medium">Year:</span> 2023</div>
-                  </div>
-                </div>
-              </div>
 
-              {students.map((c) => (
-                <div key={c.id} className="border-b border-gray-200 p-4 hover:bg-gray-50 transition-colors">
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-semibold text-gray-900">{c.name}</h3>
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => {
-                            setEditing(true);
-                            editFunction(c);
-                            setEditId(c.id);
-                          }}
-                          className="p-1 rounded-full hover:bg-gray-200 transition-colors"
-                        >
-                          <Edit size={14} className="text-blue-700" />
-                        </button>
-                        <button
-                          onClick={() => {
-                            deleteFunction(c.id);
-                          }}
-                          className="p-1 rounded-full hover:bg-gray-200 transition-colors"
-                        >
-                          <Trash2 size={14} className="text-red-700" />
-                        </button>
+                  <div className="p-5 pl-16">
+                    {/* Header with Name */}
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="font-semibold text-gray-900 text-lg leading-tight">
+                          {c.name}
+                        </h3>
+                        <div className="w-8 h-0.5 bg-black mt-2 rounded-full"></div>
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-2 text-sm text-gray-600">
-                      <div><span className="font-medium">Mobile:</span> {c.mobile}</div>
-                      <div><span className="font-medium">Waqt:</span> {c.waqt}</div>
-                      <div><span className="font-medium">Field:</span> {c.field}</div>
-                      <div><span className="font-medium">Year:</span> {c.year}</div>
+
+                    {/* Info Grid */}
+                    <div className="grid grid-cols-1 gap-3">
+                      <div className="bg-gray-50 rounded-xl p-3 border-l-4 border-black">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-medium text-gray-600 uppercase tracking-wide flex items-center gap-1">
+                            <Hash className="w-3 h-3" />
+                            Total Count
+                          </span>
+                          <span className="text-sm font-semibold text-gray-900 bg-white px-2 py-1 rounded-full">
+                            {c.total}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-50 rounded-xl p-3 border-l-4 border-black">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-medium text-gray-600 uppercase tracking-wide flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            Last Time
+                          </span>
+                          <span className="text-sm font-medium text-gray-800">
+                            {c.lastTime === "1111-11-11"
+                            ? (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                Not found
+                              </span>
+                            )
+                            : new Date(c.lastTime)
+                                .toLocaleDateString("en-US", {
+                                  year: "numeric",
+                                  month: "long",
+                                })
+                                .replace(" ", ", ")}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               ))}
+
+              {/* Empty State */}
+              {companion.length === 0 && (
+                <div className="p-12 text-center">
+                  <div className="mx-auto w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                    <Users className="w-10 h-10 text-gray-400" />
+                  </div>
+                  <p className="text-gray-500 text-base font-medium">No companions found</p>
+                  <p className="text-gray-400 text-sm mt-1">Check back later for updates</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
-
-        {/* Modal Design */}
-        {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-md mx-auto space-y-4 max-h-[90vh] overflow-y-auto"
-            >
-              <h2 className="text-lg sm:text-xl font-semibold text-center mb-4 text-gray-800">
-                {editing ? "Update Student" : "Add Student"}
-              </h2>
-
-              <div className="space-y-4">
-                <div>
-                  <input
-                    {...register("name", {
-                      required: "Name is required",
-                    })}
-                    type="text"
-                    name="name"
-                    placeholder="Name"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm sm:text-base"
-                  />
-                  {errors.name && (
-                    <span className="text-xs text-red-500 mt-1 block">
-                      {errors.name?.message}
-                    </span>
-                  )}
-                </div>
-
-                <div>
-                  <input
-                    {...register("mobile", {
-                      required: "Mobile Number is required",
-                      pattern: {
-                        value: /^[6-9]\d{9}$/,
-                        message: "Please enter valid Mobile Number",
-                      },
-                    })}
-                    type="text"
-                    placeholder="Mobile"
-                    name="mobile"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm sm:text-base"
-                  />
-                  {errors.mobile && (
-                    <span className="text-xs text-red-500 mt-1 block">
-                      {errors.mobile?.message}
-                    </span>
-                  )}
-                </div>
-
-                <div>
-                  <input
-                    {...register("age", {
-                      required: "Age is required",
-                      pattern: {
-                        value: /^(1[01][0-9]|120|[1-9][0-9]?)$/,
-                        message: "Enter a valid age between 1 and 120",
-                      },
-                    })}
-                    type="number"
-                    name="age"
-                    id="age"
-                    placeholder="21"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm sm:text-base"
-                  />
-                  {errors.age && (
-                    <span className="text-xs text-red-500 mt-1 block">
-                      {errors.age?.message}
-                    </span>
-                  )}
-                </div>
-
-                <div>
-                  <select
-                    {...register("waqt", {
-                      required: "Please select Waqt",
-                    })}
-                    name="waqt"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm sm:text-base"
-                  >
-                    <option value="">Select Waqt</option>
-                    <option value="4 Month">4 Month</option>
-                    <option value="40 Days">40 Days</option>
-                    <option value="10 Days">10 Days</option>
-                    <option value="3 Days">3 Days</option>
-                  </select>
-                  {errors.waqt && (
-                    <span className="text-xs text-red-500 mt-1 block">
-                      {errors.waqt?.message}
-                    </span>
-                  )}
-                </div>
-
-                <div>
-                  <select
-                    {...register("field", {
-                      required: "Please select a field",
-                    })}
-                    name="field"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm sm:text-base"
-                  >
-                    <option value="">Select field</option>
-
-                    <optgroup label="School">
-                      <option value="10th">10th</option>
-                      <option value="11th Arts">11th Arts</option>
-                      <option value="11th Commerce">11th Commerce</option>
-                      <option value="11th Science">11th Science</option>
-                      <option value="12th Arts">12th Arts</option>
-                      <option value="12th Commerce">12th Commerce</option>
-                      <option value="12th Science">12th Science</option>
-                    </optgroup>
-
-                    <optgroup label="College - Arts, Commerce & Science">
-                      <option value="B.A.">B.A.</option>
-                      <option value="M.A.">M.A.</option>
-                      <option value="B.COM.">B.COM.</option>
-                      <option value="M.COM.">M.COM.</option>
-                      <option value="B.SC.">B.SC.</option>
-                      <option value="M.SC.">M.SC.</option>
-                      <option value="BCA">BCA (Computer Applications)</option>
-                      <option value="MCA">MCA (Computer Applications)</option>
-                      <option value="BBA">BBA (Business Administration)</option>
-                      <option value="MBA">MBA (Business Administration)</option>
-                      <option value="BMS">BMS (Management Studies)</option>
-                      <option value="PGDM">PGDM (Diploma in Management)</option>
-                    </optgroup>
-
-                    <optgroup label="Engineering & Technology">
-                      <option value="Diploma in Engineering">
-                        Diploma in Engineering
-                      </option>
-                      <option value="B.E">B.E</option>
-                      <option value="B.Tech">B.Tech</option>
-                      <option value="M.E">M.E</option>
-                      <option value="M.Tech">M.Tech</option>
-                      <option value="B.Arch">B.Arch (Architecture)</option>
-                      <option value="M.Arch">M.Arch (Architecture)</option>
-                      <option value="B.Plan">B.Plan (Planning)</option>
-                      <option value="M.Plan">M.Plan (Planning)</option>
-                      <option value="B.Des">B.Des (Design)</option>
-                      <option value="M.Des">M.Des (Design)</option>
-                    </optgroup>
-
-                    <optgroup label="Medical & Allied Health">
-                      <option value="MBBS">MBBS</option>
-                      <option value="BDS">BDS</option>
-                      <option value="BAMS">BAMS</option>
-                      <option value="BHMS">BHMS</option>
-                      <option value="BUMS">BUMS</option>
-                      <option value="BSMS">BSMS</option>
-                      <option value="BVSc">BVSc (Veterinary)</option>
-                      <option value="MD">MD</option>
-                      <option value="MS">MS (Surgery)</option>
-                      <option value="MDS">MDS (Dental Surgery)</option>
-                      <option value="BPT">BPT (Physiotherapy)</option>
-                      <option value="MPT">MPT (Physiotherapy)</option>
-                      <option value="BMLT">BMLT (Medical Lab Technology)</option>
-                      <option value="BOT">BOT (Occupational Therapy)</option>
-                      <option value="BASLP">BASLP (Speech & Audiology)</option>
-                      <option value="B.Sc. Nursing">B.Sc. Nursing</option>
-                      <option value="M.Sc. Nursing">M.Sc. Nursing</option>
-                      <option value="GNM">GNM (Nursing)</option>
-                      <option value="ANM">ANM (Nursing)</option>
-                      <option value="B.Pharm">B.Pharm</option>
-                      <option value="D.Pharm">D.Pharm</option>
-                      <option value="M.Pharm">M.Pharm</option>
-                      <option value="MPH">MPH (Public Health)</option>
-                    </optgroup>
-
-                    <optgroup label="Education">
-                      <option value="B.Ed">B.Ed</option>
-                      <option value="M.Ed">M.Ed</option>
-                      <option value="D.Ed">D.Ed</option>
-                    </optgroup>
-
-                    <optgroup label="Law">
-                      <option value="LLB">LLB (Bachelor of Laws)</option>
-                      <option value="LLM">LLM (Master of Laws)</option>
-                    </optgroup>
-
-                    <optgroup label="Other / Competitive">
-                      <option value="ITI">ITI</option>
-                      <option value="IELTS">IELTS</option>
-                      <option value="TOEFL">TOEFL</option>
-                      <option value="PHD">Ph.D</option>
-                      <option value="CA">CA (Chartered Accountant)</option>
-                      <option value="CS">CS (Company Secretary)</option>
-                      <option value="CMA">
-                        CMA (Cost & Management Accounting)
-                      </option>
-                      <option value="UPSC">UPSC</option>
-                      <option value="SSC">SSC</option>
-                      <option value="Bank PO">Bank PO</option>
-                    </optgroup>
-                  </select>
-                  {errors.field && (
-                    <span className="text-xs text-red-500 mt-1 block">
-                      {errors.field?.message}
-                    </span>
-                  )}
-                </div>
-
-                <div>
-                  <select
-                    {...register("year", {
-                      required: "Please select the year/level",
-                    })}
-                    name="year"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm sm:text-base"
-                  >
-                    <option value="">Select year/level</option>
-
-                    <optgroup label="School">
-                      <option value="1st Semester">1st Semester</option>
-                      <option value="2nd Semester">2nd Semester</option>
-                    </optgroup>
-
-                    <optgroup label="College">
-                      <option value="1st Year">1st Year (FY)</option>
-                      <option value="2nd Year">2nd Year (SY)</option>
-                      <option value="3rd Year">3rd Year (TY)</option>
-                      <option value="4th Year">4th Year</option>
-                      <option value="5th Year">5th Year</option>
-                      <option value="6th Year">6th Year</option>
-                    </optgroup>
-                  </select>
-                  {errors.year && (
-                    <span className="text-xs text-red-500 mt-1 block">
-                      {errors.year?.message}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-6">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditing(false);
-                    reset({
-                      name: "",
-                      mobile: "",
-                      age: "",
-                      waqt: "",
-                      field: "",
-                      year: "",
-                    });
-                    setShowModal(false);
-                  }}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors w-full sm:w-auto font-medium"
-                >
-                  Close
-                </button>
-                <button
-                  type="submit"
-                  className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors w-full sm:w-auto font-medium"
-                >
-                  {editing ? "Update" : "Add"}
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
       </div>
     </div>
   );
