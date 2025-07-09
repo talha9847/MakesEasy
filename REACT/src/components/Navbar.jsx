@@ -48,7 +48,7 @@ const Navbar = () => {
             Log In
           </Link>
           <Link
-            to="/signup"
+            to="/signone"
             className="hover:text-xl cursor-pointer hover:font-bold transition-all duration-200 px-2"
           >
             Sign Up

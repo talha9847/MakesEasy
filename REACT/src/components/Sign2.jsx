@@ -138,7 +138,6 @@ const SignOne = () => {
     }
   };
 
-  // OTP verification function
   const handleOtpVerification = async (otpValue) => {
     if (!otpValue || otpValue.length !== 6) {
       toast.error("Please enter a valid 6-digit OTP");
@@ -147,7 +146,6 @@ const SignOne = () => {
 
     setIsVerifyingOtp(true);
     try {
-      // Replace with your actual OTP verification API endpoint
       const result = await axios.post(
         `http://localhost:5169/api/User/VerifyOTP/${email}/${otpValue}`
       );

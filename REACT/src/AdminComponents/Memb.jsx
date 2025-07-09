@@ -527,16 +527,13 @@ export const Memb = () => {
         <Sidebar />
       </div> */}
 
-      {/* Main Content */}
-      <div className=" p-4 lg:p-6">
-        {/* Header Section */}
+      <div className=" p-4 lg:p-9">
         <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 mb-6">
           <h1 className="hidden lg:flex text-2xl items-center gap-3 font-bold">
             <Users className="hover:scale-125 hover:cursor-pointer" />
             Members
           </h1>
 
-          {/* Search Bar */}
           <div className="relative flex-1 lg:flex-none lg:w-80">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
